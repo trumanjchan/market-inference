@@ -10,17 +10,28 @@ const options = {
 };
 
 async function getLatestBar(symbol) {
-  const url = `https://data.alpaca.markets/v2/stocks/${symbol}/bars/latest?feed=delayed_sip&currency=USD`;
-
-  const response = await fetch(url, options);
-
-  if (!response.ok) {
-    console.error('Error fetching latest bar:', response.statusText);
-    return;
-  }
-
-  const data = await response.json();
-  console.log(`Latest bar for ${symbol}:`, data);
+    const url = `https://data.alpaca.markets/v2/stocks/${symbol}/bars/latest?feed=delayed_sip&currency=USD`;
+  
+    try {
+        const response = await fetch(url, options);
+  
+        if (!response.ok) {
+            console.error('Error fetching latest bar:', response.statusText);
+            return;
+        }
+  
+        const data = await response.json();
+        console.log(`Latest bar for ${symbol}:`, data);
+    } catch (error) {
+        console.error('Fetch error:', error);
+    }
 }
-
-getLatestBar('SPY');
+  
+async function runIndefinitely(symbol) {
+    while (true) {
+        await getLatestBar(symbol);
+      
+        await new Promise(resolve => setTimeout(resolve, 60000));
+    }
+}
+runIndefinitely('SPY');
