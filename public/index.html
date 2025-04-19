@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            async function loadData() {
+                const response = await fetch('/api/data');
+                const data = await response.json();
+                console.log(data)
+
+                document.getElementById('data').innerHTML = data.symbol;
+            }
+            loadData();
+        </script>
+    </head>
+
+    <body>
+        <h1 id="data"></h1>
+    </body>
+</html>
