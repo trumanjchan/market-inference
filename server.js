@@ -14,35 +14,43 @@ const options = {
 		'APCA-API-SECRET-KEY': process.env.APCA_API_SECRET_KEY
 	}
 };
-async function getLatestBar(symbol) {
-	const url = `https://data.alpaca.markets/v2/stocks/${symbol}/bars/latest?feed=delayed_sip&currency=USD`;
+async function getComparison() {
+	const url1 = `https://data.alpaca.markets/v2/stocks/bars?symbols=SPY&timeframe=1Day&start=2024-04-20T00%3A00%3A00Z&end=2025-04-20T00%3A00%3A00Z&limit=2000&adjustment=raw&feed=sip&sort=asc`;
+	const url2 = `https://data.alpaca.markets/v2/stocks/bars?symbols=AAPL&timeframe=1Day&start=2024-04-20T00%3A00%3A00Z&end=2025-04-20T00%3A00%3A00Z&limit=2000&adjustment=raw&feed=sip&sort=asc`;
 	try {
-		const response = await fetch(url, options);
-
-		if (!response.ok) {
-			console.error('Error fetching latest bar:', response.statusText);
+		const [response1, response2] = await Promise.all([
+			fetch(url1, options),
+			fetch(url2, options)
+		]);
+		
+		if (!response1.ok || !response2.ok) {
+			console.error('Error fetching historical bars:', response1.statusText, response2.statusText);
 			return;
 		}
-
-		data = await response.json();
-		return data;
+		
+		const [data1, data2] = await Promise.all([
+			response1.json(),
+			response2.json()
+		]);
+		
+		return { data1, data2 };
 	} catch (error) {
 		console.error('Fetch error:', error);
 	}
 }
-async function runIndefinitely(symbol) {
-	while (true) {
-		await getLatestBar(symbol);
+getComparison();
 
-		await new Promise(resolve => setTimeout(resolve, 5000));
-	}
-}
-runIndefinitely('SPY');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/api/data', (req, res) => {
-	res.json(data);
+app.get('/api/data', async (req, res) => {
+	try {
+		const { data1, data2 } = await getComparison();
+		res.json({ data1, data2 });
+	} catch (error) {
+		console.error('API route error:', error);
+		res.status(500).json({ error: 'Failed to fetch data' });
+	}
 });
 
 app.listen(port, () => {

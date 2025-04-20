@@ -1,19 +1,62 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script>
-            async function loadData() {
-                const response = await fetch('/api/data');
-                const data = await response.json();
-                console.log(data)
 
-                document.getElementById('data').innerHTML = data.symbol;
-            }
-            loadData();
-        </script>
     </head>
 
     <body>
-        <h1 id="data"></h1>
+        <div id="chart"></div>
+
+        <script type="module">
+            import { createChart, PriceScaleMode } from 'https://cdn.skypack.dev/lightweight-charts@4.1.0';
+
+            function fetchData() {
+                fetch('/api/data')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Received data:', data);
+
+                        const chart = createChart(document.getElementById('chart'), {
+                            width: 600,
+                            height: 400,
+                            leftPriceScale: {
+                                visible: true,
+                                mode: PriceScaleMode.Percentage,
+                            },
+                            rightPriceScale: {
+                                visible: false,
+                            },
+                        });
+
+                        const Market = chart.addLineSeries({
+                            color: 'blue'
+                        });
+                        const Stock = chart.addLineSeries({
+                            color: 'orange'
+                        });
+
+                        Market.setData(
+                            data.data1.bars.SPY.map(day => {
+                                return {
+                                    time: day.t,
+                                    value: day.c
+                                };
+                            })
+                        );
+                        Stock.setData(
+                            data.data2.bars.AAPL.map(day => {
+                                return {
+                                    time: day.t,
+                                    value: day.c
+                                };
+                            })
+                        );
+
+                        chart.timeScale().fitContent();
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+            }
+            fetchData();
+        </script>
     </body>
 </html>
