@@ -10,8 +10,8 @@ const options = {
 	method: 'GET',
 	headers: {
 		accept: 'application/json',
-		'APCA-API-KEY-ID': process.env.APCA_API_KEY_ID,
-		'APCA-API-SECRET-KEY': process.env.APCA_API_SECRET_KEY
+		'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
+		'APCA-API-SECRET-KEY': process.env.ALPACA_API_SECRET
 	}
 };
 async function getComparison(symbol) {
@@ -54,7 +54,17 @@ app.get('/:symbol', async (req, res) => {
 app.get('/:symbol/api/data', async (req, res) => {
 	try {
 		const { data1, data2 } = await getComparison(req.params.symbol);
-		res.json({ data1, data2 });
+
+		const { runGemini } = await import('./gemini.mjs');
+		const data3 = await runGemini();
+
+
+		const combined = {
+			AlpacaApi: { data1, data2 },
+			GeminiApi: data3,
+		};
+
+		res.json(combined);
 	} catch (error) {
 		console.error('API route error:', error);
 		res.status(500).json({ error: 'Failed to fetch data' });
