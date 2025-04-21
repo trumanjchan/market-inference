@@ -15,8 +15,13 @@ const options = {
 	}
 };
 async function getComparison(symbol) {
-	const url1 = `https://data.alpaca.markets/v2/stocks/bars?symbols=SPY&timeframe=1Day&start=2024-04-21T00%3A00%3A00Z&end=2025-04-21T00%3A00%3A00Z&limit=2000&adjustment=split&feed=sip&sort=asc`;
-	const url2 = `https://data.alpaca.markets/v2/stocks/bars?symbols=${symbol}&timeframe=1Day&start=2024-04-21T00%3A00%3A00Z&end=2025-04-21T00%3A00%3A00Z&limit=2000&adjustment=split&feed=sip&sort=asc`;
+	const today = new Date();
+	const todayFormattedDate = today.toISOString().split('T')[0] + 'T00%3A00%3A00Z';
+	today.setFullYear(today.getFullYear() - 1);
+	const yearAgoFormattedDate = today.toISOString().split('T')[0] + 'T00%3A00%3A00Z';
+
+	const url1 = `https://data.alpaca.markets/v2/stocks/bars?symbols=SPY&timeframe=1Day&start=${yearAgoFormattedDate}&end=${todayFormattedDate}&limit=2000&adjustment=split&feed=sip&sort=asc`;
+	const url2 = `https://data.alpaca.markets/v2/stocks/bars?symbols=${symbol}&timeframe=1Day&start=${yearAgoFormattedDate}&end=${todayFormattedDate}&limit=2000&adjustment=split&feed=sip&sort=asc`;
 	try {
 		const [response1, response2] = await Promise.all([
 			fetch(url1, options),
