@@ -14,9 +14,9 @@ const options = {
 		'APCA-API-SECRET-KEY': process.env.APCA_API_SECRET_KEY
 	}
 };
-async function getComparison() {
-	const url1 = `https://data.alpaca.markets/v2/stocks/bars?symbols=SPY&timeframe=1Day&start=2024-04-20T00%3A00%3A00Z&end=2025-04-20T00%3A00%3A00Z&limit=2000&adjustment=raw&feed=sip&sort=asc`;
-	const url2 = `https://data.alpaca.markets/v2/stocks/bars?symbols=AAPL&timeframe=1Day&start=2024-04-20T00%3A00%3A00Z&end=2025-04-20T00%3A00%3A00Z&limit=2000&adjustment=raw&feed=sip&sort=asc`;
+async function getComparison(symbol) {
+	const url1 = `https://data.alpaca.markets/v2/stocks/bars?symbols=SPY&timeframe=1Day&start=2024-04-21T00%3A00%3A00Z&end=2025-04-21T00%3A00%3A00Z&limit=2000&adjustment=split&feed=sip&sort=asc`;
+	const url2 = `https://data.alpaca.markets/v2/stocks/bars?symbols=${symbol}&timeframe=1Day&start=2024-04-21T00%3A00%3A00Z&end=2025-04-21T00%3A00%3A00Z&limit=2000&adjustment=split&feed=sip&sort=asc`;
 	try {
 		const [response1, response2] = await Promise.all([
 			fetch(url1, options),
@@ -38,14 +38,17 @@ async function getComparison() {
 		console.error('Fetch error:', error);
 	}
 }
-getComparison();
 
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/api/data', async (req, res) => {
+app.get('/:symbol', async (req, res) => {
+	res.sendFile(__dirname + '/public/index.html');
+});
+
+app.get('/:symbol/api/data', async (req, res) => {
 	try {
-		const { data1, data2 } = await getComparison();
+		const { data1, data2 } = await getComparison(req.params.symbol);
 		res.json({ data1, data2 });
 	} catch (error) {
 		console.error('API route error:', error);

@@ -11,28 +11,52 @@
             import { createChart, PriceScaleMode } from 'https://cdn.skypack.dev/lightweight-charts@4.1.0';
 
             function fetchData() {
-                fetch('/api/data')
+                const pathSegments = window.location.pathname.split('/');
+                const symbol = pathSegments[1];
+
+                fetch(`/${symbol}/api/data`)
                     .then(response => response.json())
                     .then(data => {
                         console.log('Received data:', data);
 
                         const chart = createChart(document.getElementById('chart'), {
                             width: 600,
-                            height: 400,
+                            height: 300,
                             leftPriceScale: {
                                 visible: true,
                                 mode: PriceScaleMode.Percentage,
+                                borderVisible: false
                             },
                             rightPriceScale: {
-                                visible: false,
+                                visible: false
                             },
+                            localization: {
+                                percentageFormatter: (value) => {
+                                    const percentage = value;
+                                    const percentageString = percentage.toFixed(2);
+
+                                    if (percentageString.endsWith('.00')) {
+                                        return `${Math.round(percentage)}%`;
+                                    } else {
+                                        return `${percentageString}%`;
+                                    }
+                                },
+                            },
+                            timeScale: {
+                                ticksVisible: true
+                            },
+                            grid: {
+                                vertLines: {
+                                    visible: false
+                                }
+                            }
                         });
 
                         const Market = chart.addLineSeries({
-                            color: 'blue'
+                            color: 'rgb(66, 133, 244)'
                         });
                         const Stock = chart.addLineSeries({
-                            color: 'orange'
+                            color: 'rgb(254, 199, 111)'
                         });
 
                         Market.setData(
@@ -44,7 +68,7 @@
                             })
                         );
                         Stock.setData(
-                            data.data2.bars.AAPL.map(day => {
+                            data.data2.bars[symbol].map(day => {
                                 return {
                                     time: day.t,
                                     value: day.c
