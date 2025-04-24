@@ -36,9 +36,6 @@ export async function getLowestPoint(marketData, tickerData, symbol) {
 }
 
 export async function askGemini(marketData, tickerData, articleData, symbol) {
-	//console.log(JSON.stringify(articleData))
-	console.log(articleData)
-
 	const response = await ai.models.generateContent({
 		model: "gemini-2.0-flash",
 		contents: [

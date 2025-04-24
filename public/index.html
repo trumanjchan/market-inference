@@ -9,13 +9,16 @@
         <input type="text" id="ticker" name="ticker" placeholder="NVDA">
         <button onclick="search()">Search</button>
 
-        <div id="direction1"></div>
-        <div id="direction2"></div>
-        <div id="direction3"></div>
-        <div id="direction4"></div>
-
         <div style="display: flex; flex-direction: column;">
-            <div id="chart"></div>
+            <div style="display: flex; flex-direction: row;">
+                <div id="chart"></div>
+                <div id="direction">
+                    <div id="direction1"></div>
+                    <div id="direction2"></div>
+                    <div id="direction3"></div>
+                    <div id="direction4"></div>
+                </div>
+            </div>
             <div id="answer"></div>
         </div>
 
@@ -25,8 +28,12 @@
 
             function search() {
                 // reset data before populating
+                document.getElementById("direction").childNodes.forEach(element => {
+                    element.innerText = null;
+                })
                 document.getElementById("chart").innerText = null;
                 document.getElementById("answer").innerText = null;
+                
 
                 const input = document.getElementById('ticker');
                 const inputValue = input.value.trim().toUpperCase() || input.placeholder;
@@ -100,10 +107,17 @@
                                 document.getElementById("direction2").innerText = data[inputValue].lowest_closing_price_date;
                                 document.getElementById("direction3").innerText = data[inputValue].lowest_closing_price_date_minus_1_week;
                                 document.getElementById("direction4").innerText = data[inputValue].lowest_closing_price_date_plus_1_week;
+                                
+                                fetch(`/${inputValue}/articles`)
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        document.getElementById("answer").innerHTML = data;
+                                    })
+                                    .catch(error => console.error('Error fetching articles:', error));
                             })
-                            .catch(error => console.error('Error fetching data:', error));
+                            .catch(error => console.error('Error fetching direction:', error));
                     })
-                    .catch(error => console.error('Error fetching data:', error));
+                    .catch(error => console.error('Error fetching datasets:', error));
             }
             window.search = search;
         </script>
