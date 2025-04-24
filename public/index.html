@@ -1,27 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-
+        <meta charset="UTF-8" />
+        <title>Market Inference</title>
     </head>
 
     <body>
+        <input type="text" id="ticker" name="ticker" placeholder="NVDA">
+        <button onclick="search()">Search</button>
+
+        <div id="direction1"></div>
+        <div id="direction2"></div>
+        <div id="direction3"></div>
+        <div id="direction4"></div>
+
         <div style="display: flex; flex-direction: column;">
             <div id="chart"></div>
             <div id="answer"></div>
         </div>
 
+
         <script type="module">
             import { createChart, PriceScaleMode } from 'https://cdn.skypack.dev/lightweight-charts@4.1.0';
 
-            function fetchData() {
-                const pathSegments = window.location.pathname.split('/');
-                const symbol = pathSegments[1].toUpperCase();
+            function search() {
+                // reset data before populating
+                document.getElementById("chart").innerText = null;
+                document.getElementById("answer").innerText = null;
 
-                fetch(`/${symbol}/api/data`)
+                const input = document.getElementById('ticker');
+                const inputValue = input.value.trim().toUpperCase() || input.placeholder;
+
+                fetch(`/${inputValue}/datasets`)
                     .then(response => response.json())
                     .then(data => {
-                        console.log('Received data:', data);
-
                         const chart = createChart(document.getElementById('chart'), {
                             width: 600,
                             height: 300,
@@ -63,7 +75,7 @@
                         });
 
                         Market.setData(
-                            data.AlpacaApi.data1.bars.SPY.map(day => {
+                            data.marketData.bars.SPY.map(day => {
                                 return {
                                     time: day.t,
                                     value: day.c
@@ -71,7 +83,7 @@
                             })
                         );
                         Stock.setData(
-                            data.AlpacaApi.data2.bars[symbol].map(day => {
+                            data.tickerData.bars[inputValue].map(day => {
                                 return {
                                     time: day.t,
                                     value: day.c
@@ -81,11 +93,19 @@
 
                         chart.timeScale().fitContent();
 
-                        document.getElementById("answer").innerHTML = data.GeminiApi;
+                        fetch(`/${inputValue}/direction`)
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById("direction1").innerText = "Low: " + data[inputValue].lowest_closing_price;
+                                document.getElementById("direction2").innerText = data[inputValue].lowest_closing_price_date;
+                                document.getElementById("direction3").innerText = data[inputValue].lowest_closing_price_date_minus_1_week;
+                                document.getElementById("direction4").innerText = data[inputValue].lowest_closing_price_date_plus_1_week;
+                            })
+                            .catch(error => console.error('Error fetching data:', error));
                     })
                     .catch(error => console.error('Error fetching data:', error));
             }
-            fetchData();
+            window.search = search;
         </script>
     </body>
 </html>

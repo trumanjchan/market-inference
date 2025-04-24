@@ -5,7 +5,7 @@ dotenv.config();
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-export async function getLowestPoint(data1, data2, symbol) {
+export async function getLowestPoint(marketData, tickerData, symbol) {
 	const response = await ai.models.generateContent({
 		model: "gemini-2.0-flash",
 		contents: [
@@ -24,8 +24,8 @@ export async function getLowestPoint(data1, data2, symbol) {
 							},
 							...
 						}
-						SPY data: ${JSON.stringify(data1.bars.SPY, null, 2)}, 
-						${symbol} data: ${JSON.stringify(data2.bars[symbol], null, 2)}`
+						SPY data: ${JSON.stringify(marketData.bars.SPY, null, 2)}, 
+						${symbol} data: ${JSON.stringify(tickerData.bars[symbol], null, 2)}`
 					}
 				]
 			}
@@ -35,10 +35,9 @@ export async function getLowestPoint(data1, data2, symbol) {
 	return result;
 }
 
-export async function askGemini(data1, data2, newsArticles, symbol) {
-	//console.log(JSON.stringify(newsArticles))
-	console.log(data1)
-	console.log(newsArticles)
+export async function askGemini(marketData, tickerData, articleData, symbol) {
+	//console.log(JSON.stringify(articleData))
+	console.log(articleData)
 
 	const response = await ai.models.generateContent({
 		model: "gemini-2.0-flash",
@@ -51,14 +50,15 @@ export async function askGemini(data1, data2, newsArticles, symbol) {
 						`Given the SPY and ${symbol} data, analyze the lowest closing price of SPY and ${symbol} and determine:
 
 						1) if there is a correlation
-						2) list 10 articles that are likely factors that contributed to ${symbol}'s price dip. Include date published and article url.
+						2) make judgement on whether it is due to earnings, mergers or acquisitions, Fed interest rate announcement, CPI report, jobs report, or unemployment report
+						3) pick and choose 10 articles that are likely factors that contributed to ${symbol}'s price dip. Include date published and article url.
 						markup text format without asterisks.
 
-						SPY data: ${JSON.stringify(data1.bars.SPY, null, 2)}, 
-						${symbol} data: ${JSON.stringify(data2.bars[symbol], null, 2)}, 
+						SPY data: ${JSON.stringify(marketData.bars.SPY, null, 2)}, 
+						${symbol} data: ${JSON.stringify(tickerData.bars[symbol], null, 2)}, 
 
-						SPY news: ${JSON.stringify(newsArticles.marketNews.news, null, 2)}
-						${symbol} news: ${JSON.stringify(newsArticles.symbolNews.news, null, 2)}`
+						SPY news: ${JSON.stringify(articleData.marketNews.news, null, 2)}
+						${symbol} news: ${JSON.stringify(articleData.tickerNews.news, null, 2)}`
 					}
 				]
 			}
