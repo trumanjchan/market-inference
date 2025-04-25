@@ -6,6 +6,10 @@
     "express": "^5.1.0",
     "lightweight-charts": "^5.0.5",
     "marked": "^15.0.9",
-    "node": "^23.11.0"
+    "node": "^23.11.0",
+    "sass": "^1.87.0"
+  },
+  "scripts": {
+    "start": "sass public/scss:public/css && node server.js"
   }
 }

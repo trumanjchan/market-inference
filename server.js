@@ -9,7 +9,7 @@ const { getComparison, getNews } = require('./utils/helpers');
 const dataCache = new Map();
 
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 
 app.get('/:symbol/datasets', async (req, res) => {
 	try {

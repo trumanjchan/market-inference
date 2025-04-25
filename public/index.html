@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <title>Market Inference</title>
+        <link rel="stylesheet" href="/css/styles.css">
     </head>
 
     <body>
@@ -11,7 +12,22 @@
 
         <div style="display: flex; flex-direction: column;">
             <div style="display: flex; flex-direction: row;">
-                <div id="chart"></div>
+                <div>
+                    <div id="chart"></div>
+                    <div class="legend">
+                        <div class="legend-container">
+                            <div id="market-legend-title" class="legend-title market"></div>
+                            <div id="market-legend-price" class="legend-price"></div>
+                            <div id="market-legend-return" class="legend-return"></div>
+                        </div>
+                        <div class="legend-container">
+                            <div id="stock-legend-title" class="legend-title stock"></div>
+                            <div id="stock-legend-price" class="legend-price"></div>
+                            <div id="stock-legend-return" class="legend-return"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="direction">
                     <div id="direction1"></div>
                     <div id="direction2"></div>
@@ -19,6 +35,7 @@
                     <div id="direction4"></div>
                 </div>
             </div>
+
             <div id="answer"></div>
         </div>
 
@@ -62,7 +79,7 @@
                                     } else {
                                         return `${percentageString}%`;
                                     }
-                                },
+                                }
                             },
                             timeScale: {
                                 ticksVisible: true
@@ -99,6 +116,69 @@
                         );
 
                         chart.timeScale().fitContent();
+
+                        chart.subscribeCrosshairMove((param) => {
+                            if (!param.time) {
+                                // price today
+                                const latestMarketPrice = data.marketData.bars.SPY[data.marketData.bars.SPY.length - 1].c;
+                                const latestStockPrice = data.tickerData.bars[inputValue][data.tickerData.bars[inputValue].length - 1].c;
+
+                                // percent change over one year
+                                const marketClose = data.marketData.bars.SPY[0].c;
+                                const stockClose = data.tickerData.bars[inputValue][0].c;
+
+                                const marketPriceChange = latestMarketPrice - marketClose;
+                                const marketPercentChange = (marketPriceChange / marketClose) * 100;
+                                const stockPriceChange = latestStockPrice - stockClose;
+                                const stockPercentChange = (stockPriceChange / stockClose) * 100;
+
+                                document.getElementById('market-legend-title').textContent = `SPDR S&P 500 ETF`;
+                                document.getElementById('market-legend-price').textContent = `$${latestMarketPrice.toFixed(2)}`;
+                                document.getElementById('market-legend-return').textContent = `${marketPercentChange.toFixed(2)}%`;
+                                document.getElementById('stock-legend-title').textContent = `${inputValue}`;
+                                document.getElementById('stock-legend-price').textContent = `$${latestStockPrice.toFixed(2)}`;
+                                document.getElementById('stock-legend-return').textContent = `${stockPercentChange.toFixed(2)}%`;
+                                return;
+                            }
+
+                            // price at cursor
+                            const marketPrice = param.seriesData.get(Market)?.value;
+                            const stockPrice = param.seriesData.get(Stock)?.value;
+
+                            // percent change over time at cursor
+                            const marketYearAgoClose = data.marketData.bars.SPY[0].c;
+                            const stockYearAgoClose = data.tickerData.bars[inputValue][0].c;
+
+                            const marketPriceChange = marketPrice - marketYearAgoClose;
+                            const marketPercentChange = (marketPriceChange / marketYearAgoClose) * 100;
+                            const stockPriceChange = stockPrice - stockYearAgoClose;
+                            const stockPercentChange = (stockPriceChange / stockYearAgoClose) * 100;
+
+                            document.getElementById('market-legend-title').textContent = `SPDR S&P 500 ETF`;
+                            document.getElementById('market-legend-price').textContent = `$${marketPrice.toFixed(2)}`;
+                            document.getElementById('market-legend-return').textContent = `${marketPercentChange.toFixed(2)}%`;
+                            document.getElementById('stock-legend-title').textContent = `${inputValue}`;
+                            document.getElementById('stock-legend-price').textContent = `$${stockPrice.toFixed(2)}`;
+                            document.getElementById('stock-legend-return').textContent = `${stockPercentChange.toFixed(2)}%`;
+                        });
+
+                        const latestMarketPrice = data.marketData.bars.SPY[data.marketData.bars.SPY.length - 1].c;
+                        const latestStockPrice = data.tickerData.bars[inputValue][data.tickerData.bars[inputValue].length - 1].c;
+
+                        const marketClose = data.marketData.bars.SPY[0].c;
+                        const stockClose = data.tickerData.bars[inputValue][0].c;
+
+                        const marketPriceChange = latestMarketPrice - marketClose;
+                        const marketPercentChange = (marketPriceChange / marketClose) * 100;
+                        const stockPriceChange = latestStockPrice - stockClose;
+                        const stockPercentChange = (stockPriceChange / stockClose) * 100;
+
+                        document.getElementById('market-legend-title').textContent = `SPDR S&P 500 ETF`;
+                        document.getElementById('market-legend-price').textContent = `$${latestMarketPrice.toFixed(2)}`;
+                        document.getElementById('market-legend-return').textContent = `${marketPercentChange.toFixed(2)}%`;
+                        document.getElementById('stock-legend-title').textContent = `${inputValue}`;
+                        document.getElementById('stock-legend-price').textContent = `$${latestStockPrice.toFixed(2)}`;
+                        document.getElementById('stock-legend-return').textContent = `${stockPercentChange.toFixed(2)}%`;
 
                         fetch(`/${inputValue}/direction`)
                             .then(response => response.json())
