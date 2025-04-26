@@ -1,3 +1,12 @@
+.stockGreen {
+    color:  rgb(19, 115, 51);
+    background-color: rgb(230, 244, 234);
+}
+.stockRed {
+    color: rgb(165, 14, 14);
+    background-color: rgb(252, 232, 230);
+}
+
 .legend {
     display: flex;
     flex-direction: column;
@@ -20,6 +29,7 @@
         .legend-title {
             position: relative;
             padding-left: 10px;
+            margin: auto 0;
 
             &.market {
                 &::before {
@@ -47,10 +57,14 @@
 
         .legend-price {
             text-align: right;
+            margin: auto 0;
         }
 
         .legend-return {
-            text-align: right;
+            width: fit-content;
+            margin-left: auto;
+            padding: 5px 10px;
+            border-radius: 8px;
         }
     }
 }
