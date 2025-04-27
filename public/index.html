@@ -2,37 +2,44 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Market Inference</title>
         <link rel="stylesheet" href="/css/styles.css">
     </head>
 
     <body>
-        <input type="text" id="ticker" name="ticker" placeholder="NVDA">
-        <button onclick="search()">Search</button>
-
         <div style="display: flex; flex-direction: column;">
             <div style="display: flex; flex-direction: row;">
-                <div>
+                <div class="chart-and-legend">
+                    <div style="width: fit-content; margin: auto;">
+                        <input type="text" id="ticker" name="ticker" placeholder="NVDA">
+                        <button onclick="search()">Search</button>
+                    </div>
                     <div id="chart"></div>
                     <div class="legend">
                         <div class="legend-container">
-                            <div id="market-legend-title" class="legend-title market"></div>
-                            <div id="market-legend-price" class="legend-price"></div>
-                            <div id="market-legend-return" class="legend-return"></div>
+                            <div class="legend-row">
+                                <div id="market-legend-title" class="legend-title market"></div>
+                                <div id="market-legend-price" class="legend-price"></div>
+                                <div id="market-legend-return" class="legend-return"></div>
+                            </div>
+                            <div class="legend-row">
+                                <div id="market-direction-low" class=""></div>
+                                <div id="market-direction-high" class=""></div>
+                            </div>
                         </div>
                         <div class="legend-container">
-                            <div id="stock-legend-title" class="legend-title stock"></div>
-                            <div id="stock-legend-price" class="legend-price"></div>
-                            <div id="stock-legend-return" class="legend-return"></div>
+                            <div class="legend-row">
+                                <div id="stock-legend-title" class="legend-title stock"></div>
+                                <div id="stock-legend-price" class="legend-price"></div>
+                                <div id="stock-legend-return" class="legend-return"></div>
+                            </div>
+                            <div class="legend-row">
+                                <div id="stock-direction-low" class=""></div>
+                                <div id="stock-direction-high" class=""></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div id="direction">
-                    <div id="direction1"></div>
-                    <div id="direction2"></div>
-                    <div id="direction3"></div>
-                    <div id="direction4"></div>
                 </div>
             </div>
 
@@ -43,11 +50,16 @@
         <script type="module">
             import { createChart, PriceScaleMode } from 'https://cdn.skypack.dev/lightweight-charts@4.1.0';
 
+            const formatDate = d => {
+                const [year, month, day] = d.split('-');
+                return `${day} ${new Date(`${year}-${month}-01T00:00:00Z`).toLocaleString('en-US', { month: 'short', timeZone: 'UTC' })} '${year.slice(2)}`;
+            };
+
             function search() {
                 // reset data before populating
-                document.getElementById("direction").childNodes.forEach(element => {
-                    element.innerText = null;
-                })
+                //document.getElementById("direction").childNodes.forEach(element => {
+                //    element.innerText = null;
+                //})
                 document.getElementById("chart").innerText = null;
                 document.getElementById("answer").innerText = null;
                 
@@ -195,13 +207,21 @@
                         document.getElementById('stock-legend-price').textContent = `$${latestStockPrice.toFixed(2)}`;
                         document.getElementById('stock-legend-return').textContent = `${stockPercentChange.toFixed(2)}%`;
 
+                        let divs = document.querySelectorAll('.tv-lightweight-charts > table > tr > td:nth-child(2) > div');
+                        divs.forEach(div => {
+                            let canvases = div.children;
+                            for (let child of canvases) {
+                                child.className = "canvas";
+                            }
+                        });
+
                         fetch(`/${inputValue}/direction`)
                             .then(response => response.json())
                             .then(data => {
-                                document.getElementById("direction1").innerText = "Low: " + data[inputValue].lowest_closing_price;
-                                document.getElementById("direction2").innerText = data[inputValue].lowest_closing_price_date;
-                                document.getElementById("direction3").innerText = data[inputValue].lowest_closing_price_date_minus_1_week;
-                                document.getElementById("direction4").innerText = data[inputValue].lowest_closing_price_date_plus_1_week;
+                                document.getElementById("market-direction-low").innerText = "Low: " + data.SPY.lowest_closing_price + " — " + formatDate(data.SPY.lowest_closing_price_date);
+                                document.getElementById("market-direction-high").innerText = "High: " + data.SPY.highest_closing_price + " — " + formatDate(data.SPY.highest_closing_price_date);
+                                document.getElementById("stock-direction-low").innerText = "Low: " + data[inputValue].lowest_closing_price + " — " + formatDate(data[inputValue].lowest_closing_price_date);
+                                document.getElementById("stock-direction-high").innerText = "High: " + data[inputValue].highest_closing_price + " — " + formatDate(data[inputValue].highest_closing_price_date);
                                 
                                 fetch(`/${inputValue}/articles`)
                                     .then(response => response.json())

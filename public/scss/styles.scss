@@ -1,3 +1,7 @@
+body {
+    margin: 0;
+}
+
 .stockGreen {
     color:  rgb(19, 115, 51);
     background-color: rgb(230, 244, 234);
@@ -6,65 +10,98 @@
     color: rgb(165, 14, 14);
     background-color: rgb(252, 232, 230);
 }
+.canvas {
+    @media screen and (max-width: 600px) {
+        width: calc(100vw - 70px) !important;
+    }
+}
 
-.legend {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 80%;
-    margin: 20px auto;
+.chart-and-legend {
+    width: fit-content;
+    margin: auto;
 
-    .legend-container {
-        display: grid;
-        grid-template-columns: 40% auto auto;
+    @media screen and (max-width: 600px) {
+        width: 100%;
+    }
 
-        &:first-child {
-            border-bottom: 1px solid rgb(218, 220, 224);
-            padding-bottom: 10px;
+    #chart {
+        @media screen and (max-width: 600px) {
+            display: flex;
+            width: 100%;
         }
-        &:last-child {
-            padding-top: 10px;
-        }
+    }
 
-        .legend-title {
-            position: relative;
-            padding-left: 10px;
-            margin: auto 0;
-
-            &.market {
-                &::before {
-                    background-color: rgb(66, 133, 244);
-                }
+    .legend {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 80%;
+        margin: 20px auto;
+    
+        .legend-container {
+            display: flex;
+            flex-direction: column;
+    
+            &:first-child {
+                border-bottom: 1px solid rgb(218, 220, 224);
+                padding-bottom: 10px;
             }
-            &.stock {
-                &::before {
-                    background-color: rgb(254, 199, 111);
-                }
+            &:last-child {
+                padding-top: 10px;
             }
+    
+            .legend-row {
+                display: grid;
+                grid-template-columns: auto auto auto;
+    
+                &:last-child {
+                    display: flex;
+                    flex-direction: column;
+                    margin-left: 15px;
+                }
+                
+                .legend-title {
+                    position: relative;
+                    padding-left: 10px;
+                    width: 140px;
+                    margin: auto 0;
         
-            &::before {
-                content: "";
-                position: absolute;
-                width: 3px;
-                height: 80%;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                margin: auto;
-                border-radius: 25px;
+                    &.market {
+                        &::before {
+                            background-color: rgb(66, 133, 244);
+                        }
+                    }
+                    &.stock {
+                        &::before {
+                            background-color: rgb(254, 199, 111);
+                        }
+                    }
+                
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        width: 3px;
+                        height: 80%;
+                        top: 0;
+                        bottom: 0;
+                        left: 0;
+                        margin: auto;
+                        border-radius: 25px;
+                    }
+                }
+        
+                .legend-price {
+                    text-align: right;
+                    margin: auto 0;
+                }
+        
+                .legend-return {
+                    width: fit-content;
+                    margin-left: auto;
+                    padding: 5px 10px;
+                    border-radius: 8px;
+                }
             }
-        }
-
-        .legend-price {
-            text-align: right;
-            margin: auto 0;
-        }
-
-        .legend-return {
-            width: fit-content;
-            margin-left: auto;
-            padding: 5px 10px;
-            border-radius: 8px;
         }
     }
 }

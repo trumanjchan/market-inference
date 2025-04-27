@@ -1,3 +1,7 @@
+body {
+  margin: 0;
+}
+
 .stockGreen {
   color: rgb(19, 115, 51);
   background-color: rgb(230, 244, 234);
@@ -8,36 +12,61 @@
   background-color: rgb(252, 232, 230);
 }
 
-.legend {
+@media screen and (max-width: 600px) {
+  .canvas {
+    width: calc(100vw - 70px) !important;
+  }
+}
+
+.chart-and-legend {
+  width: fit-content;
+  margin: auto;
+}
+@media screen and (max-width: 600px) {
+  .chart-and-legend {
+    width: 100%;
+  }
+}
+.chart-and-legend .legend {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 80%;
   margin: 20px auto;
 }
-.legend .legend-container {
-  display: grid;
-  grid-template-columns: 40% auto auto;
+.chart-and-legend .legend .legend-container {
+  display: flex;
+  flex-direction: column;
 }
-.legend .legend-container:first-child {
+.chart-and-legend .legend .legend-container:first-child {
   border-bottom: 1px solid rgb(218, 220, 224);
   padding-bottom: 10px;
 }
-.legend .legend-container:last-child {
+.chart-and-legend .legend .legend-container:last-child {
   padding-top: 10px;
 }
-.legend .legend-container .legend-title {
+.chart-and-legend .legend .legend-container .legend-row {
+  display: grid;
+  grid-template-columns: auto auto auto;
+}
+.chart-and-legend .legend .legend-container .legend-row:last-child {
+  display: flex;
+  flex-direction: column;
+  margin-left: 15px;
+}
+.chart-and-legend .legend .legend-container .legend-row .legend-title {
   position: relative;
   padding-left: 10px;
+  width: 140px;
   margin: auto 0;
 }
-.legend .legend-container .legend-title.market::before {
+.chart-and-legend .legend .legend-container .legend-row .legend-title.market::before {
   background-color: rgb(66, 133, 244);
 }
-.legend .legend-container .legend-title.stock::before {
+.chart-and-legend .legend .legend-container .legend-row .legend-title.stock::before {
   background-color: rgb(254, 199, 111);
 }
-.legend .legend-container .legend-title::before {
+.chart-and-legend .legend .legend-container .legend-row .legend-title::before {
   content: "";
   position: absolute;
   width: 3px;
@@ -48,11 +77,11 @@
   margin: auto;
   border-radius: 25px;
 }
-.legend .legend-container .legend-price {
+.chart-and-legend .legend .legend-container .legend-row .legend-price {
   text-align: right;
   margin: auto 0;
 }
-.legend .legend-container .legend-return {
+.chart-and-legend .legend .legend-container .legend-row .legend-return {
   width: fit-content;
   margin-left: auto;
   padding: 5px 10px;
