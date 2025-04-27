@@ -10,11 +10,6 @@ body {
     color: rgb(165, 14, 14);
     background-color: rgb(252, 232, 230);
 }
-.canvas {
-    @media screen and (max-width: 600px) {
-        width: calc(100vw - 70px) !important;
-    }
-}
 
 .chart-and-legend {
     width: fit-content;
@@ -22,13 +17,6 @@ body {
 
     @media screen and (max-width: 600px) {
         width: 100%;
-    }
-
-    #chart {
-        @media screen and (max-width: 600px) {
-            display: flex;
-            width: 100%;
-        }
     }
 
     .legend {

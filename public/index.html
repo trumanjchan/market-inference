@@ -100,6 +100,11 @@
                                 vertLines: {
                                     visible: false
                                 }
+                            },
+                            crosshair: {
+                                horzLine: {
+                                    visible: false
+                                }
                             }
                         });
 
@@ -126,8 +131,6 @@
                                 };
                             })
                         );
-
-                        chart.timeScale().fitContent();
 
                         chart.subscribeCrosshairMove((param) => {
                             if (!param.time) {
@@ -174,6 +177,20 @@
                             document.getElementById('stock-legend-return').textContent = `${stockPercentChange.toFixed(2)}%`;
                         });
 
+                        const initialWidth = document.getElementById("chart").clientWidth;
+                        const initialHeight = document.getElementById("chart").clientHeight;
+                        const aspectRatio = initialWidth / initialHeight;
+
+                        const resizeObserver = new ResizeObserver(entries => {
+                            for (let entry of entries) {
+                                const { width } = entry.contentRect;
+                                const height = width / aspectRatio;
+                                chart.resize(width, height);
+                                chart.timeScale().fitContent();
+                            }
+                        });
+                        resizeObserver.observe(document.getElementById("chart"));
+
                         const percentElements = document.querySelectorAll('.legend-return');
                         const observer = new MutationObserver((mutations) => {
                             mutations.forEach((mutation) => {
@@ -207,13 +224,7 @@
                         document.getElementById('stock-legend-price').textContent = `$${latestStockPrice.toFixed(2)}`;
                         document.getElementById('stock-legend-return').textContent = `${stockPercentChange.toFixed(2)}%`;
 
-                        let divs = document.querySelectorAll('.tv-lightweight-charts > table > tr > td:nth-child(2) > div');
-                        divs.forEach(div => {
-                            let canvases = div.children;
-                            for (let child of canvases) {
-                                child.className = "canvas";
-                            }
-                        });
+                        document.querySelector('.tv-lightweight-charts > table > tr:first-child > td:first-child > div > canvas:last-child').style.visibility = "hidden";
 
                         fetch(`/${inputValue}/direction`)
                             .then(response => response.json())

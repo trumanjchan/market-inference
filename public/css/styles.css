@@ -12,12 +12,6 @@ body {
   background-color: rgb(252, 232, 230);
 }
 
-@media screen and (max-width: 600px) {
-  .canvas {
-    width: calc(100vw - 70px) !important;
-  }
-}
-
 .chart-and-legend {
   width: fit-content;
   margin: auto;
