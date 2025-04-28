@@ -39,26 +39,32 @@ const getComparison = async (symbol) => {
 };
 
 const getNews = async (articleData, symbol) => {
-	const marketNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${articleData.SPY.lowest_closing_price_date_minus_1_week}&end=${articleData.SPY.lowest_closing_price_date_plus_1_week}&sort=desc&symbols=SPY&limit=10`;
-	const tickerNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${articleData[symbol].lowest_closing_price_date_minus_1_week}&end=${articleData[symbol].lowest_closing_price_date_plus_1_week}&sort=desc&symbols=${symbol}&limit=10`;
+	const marketLowNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${articleData.SPY.lowest_closing_price_date_minus_1_week}&end=${articleData.SPY.lowest_closing_price_date_plus_1_week}&sort=desc&symbols=SPY&limit=50`;
+	const tickerLowNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${articleData[symbol].lowest_closing_price_date_minus_1_week}&end=${articleData[symbol].lowest_closing_price_date_plus_1_week}&sort=desc&symbols=${symbol}&limit=50`;
+	const marketHighNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${articleData.SPY.highest_closing_price_date_minus_1_week}&end=${articleData.SPY.highest_closing_price_date_plus_1_week}&sort=desc&symbols=SPY&limit=50`;
+	const tickerHighNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${articleData[symbol].highest_closing_price_date_minus_1_week}&end=${articleData[symbol].highest_closing_price_date_plus_1_week}&sort=desc&symbols=${symbol}&limit=50`;
 
 	try {
-		const [marketNewsResponse, tickerNewsResponse] = await Promise.all([
-			fetch(marketNewsUrl, options),
-			fetch(tickerNewsUrl, options)
+		const [marketLowNewsResponse, tickerLowNewsResponse, marketHighNewsResponse, tickerHighNewsResponse] = await Promise.all([
+			fetch(marketLowNewsUrl, options),
+			fetch(tickerLowNewsUrl, options),
+			fetch(marketHighNewsUrl, options),
+			fetch(tickerHighNewsUrl, options)
 		]);
 		
-		if (!marketNewsResponse.ok || !tickerNewsResponse) {
-			console.error('Error fetching historical bars:', marketNewsResponse.statusText, tickerNewsResponse.statusText);
+		if (!marketLowNewsResponse.ok || !tickerLowNewsResponse.ok || !marketHighNewsResponse.ok || !tickerHighNewsResponse.ok) {
+			console.error('Error fetching historical bars:', marketLowNewsResponse.statusText, tickerLowNewsResponse.statusText, marketHighNewsResponse.statusText, tickerHighNewsResponse.statusText);
 			return;
 		}
 		
-		const [marketNews, tickerNews] = await Promise.all([
-			marketNewsResponse.json(),
-			tickerNewsResponse.json()
+		const [marketLowNews, tickerLowNews, marketHighNews, tickerHighNews] = await Promise.all([
+			marketLowNewsResponse.json(),
+			tickerLowNewsResponse.json(),
+			marketHighNewsResponse.json(),
+			tickerHighNewsResponse.json()
 		]);
 		
-		return { marketNews, tickerNews };
+		return { marketLowNews, tickerLowNews, marketHighNews, tickerHighNews };
 	} catch (error) {
 		console.error('Fetch error:', error);
 	}

@@ -261,14 +261,14 @@
                                         document.getElementById("positive-factors").innerHTML = data.factors.positive.map(factor => {
                                             return `<strong>${factor.factor}</strong>`
                                         }).join("<br><br>");
-                                        document.getElementById("positive-articles").innerHTML = data.articles.positive.map(article => {
+                                        document.getElementById("positive-articles").innerHTML = data.articles.High.positive.map(article => {
                                             return `<div>${formatDate(article.created_at.substring(0, 10))} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
                                         }).join("<br><br>");
 
                                         document.getElementById("negative-factors").innerHTML = data.factors.negative.map(factor => {
                                             return `<strong>${factor.factor}</strong>`
                                         }).join("<br><br>");
-                                        document.getElementById("negative-articles").innerHTML = data.articles.negative.map(article => {
+                                        document.getElementById("negative-articles").innerHTML = data.articles.Low.negative.map(article => {
                                             return `<div>${formatDate(article.created_at.substring(0, 10))} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
                                         }).join("<br><br>");
                                     })

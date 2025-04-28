@@ -48,11 +48,15 @@ export async function getLowestPoint(marketData, tickerData, symbol) {
 }
 
 export async function askGemini(marketArray, tickerArray, articleData, symbol) {
-	const marketNewsOriginalArray = articleData.marketNews;
-	const tickerNewsOriginalArray = articleData.tickerNews;
+	const marketLowNewsOriginalArray = articleData.marketLowNews;
+	const tickerLowNewsOriginalArray = articleData.tickerLowNews;
+	const marketLowNewsArray = marketLowNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at, headline, url }));
+	const tickerLowNewsArray = tickerLowNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at, headline, url }));
 
-	const marketNewsArray = marketNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at, headline, url }));
-	const tickerNewsArray = tickerNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at, headline, url }));
+	const marketHighNewsOriginalArray = articleData.marketHighNews;
+	const tickerHighNewsOriginalArray = articleData.tickerHighNews;
+	const marketHighNewsArray = marketHighNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at, headline, url }));
+	const tickerHighNewsArray = tickerHighNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at, headline, url }));
 	
 	const response = await ai.models.generateContent({
 		model: "gemini-2.0-flash",
@@ -62,17 +66,21 @@ export async function askGemini(marketArray, tickerArray, articleData, symbol) {
 				parts: [
 					{
 						text:
-						`Find the lowest_closing_price, lowest_closing_price_date, highest_closing_price, highest_closing_price_date,
-						determine the concise macroeconomic topics that led to the highest_closing_price and lowest_closing_price for ${symbol},
-						and find 5 positive/negative relevant articles that mention the macroeconomic topics that you picked,
+						`Find the lowest_closing_price, lowest_closing_price_date, lowest_closing_price_date_minus_1_week, lowest_closing_price_date_plus_1_week, highest_closing_price, highest_closing_price_date, highest_closing_price_date_minus_1_week, highest_closing_price_date_plus_1_week,
+						determine concisely the macroeconomic topics that led to the highest_closing_price and lowest_closing_price for ${symbol},
+						find 5 negative relevant articles between lowest_closing_price_date_minus_1_week and lowest_closing_price_date_plus_1_week, and 5 positive relevant articles between highest_closing_price_date_minus_1_week and highest_closing_price_date_plus_1_week that mention the macroeconomic topics that you picked from the Low news and High news for ${symbol},
 						
 						then return your answer as JSON-valid in this format:
 						{
 							SPY: {
 								"lowest_closing_price": "...",
 								"lowest_closing_price_date": "...",
+								"lowest_closing_price_date_minus_1_week": "...",
+								"lowest_closing_price_date_plus_1_week": "...",
 								"highest_closing_price": "...",
-								"highest_closing_price_date": "..."
+								"highest_closing_price_date": "...",
+								"highest_closing_price_date_minus_1_week": "...",
+								"highest_closing_price_date_plus_1_week": "..."
 							},
 							${symbol}: {
 								"lowest_closing_price": "...",
@@ -95,29 +103,35 @@ export async function askGemini(marketArray, tickerArray, articleData, symbol) {
 								]
 							},
 							articles: {
-								negative: [
-									{
-										created_at: "...",
-										headline: "...",
-										url: "..."
-									},
-									...
-								],
-								positive: [
-									{
-										created_at: "...",
-										headline: "...",
-										url: "..."
-									},
-									...
-								]
+								Low: {
+									negative: [
+										{
+											created_at: "...",
+											headline: "...",
+											url: "..."
+										},
+										...
+									]
+								},
+								High: {
+									positive: [
+										{
+											created_at: "...",
+											headline: "...",
+											url: "..."
+										},
+										...
+									]
+								}
 							}
 						}
 						SPY data: ${JSON.stringify(marketArray, null, 2)}
 						${symbol} data: ${JSON.stringify(tickerArray, null, 2)}
 
-						SPY news: ${JSON.stringify(marketNewsArray, null, 2)}
-						${symbol} news: ${JSON.stringify(tickerNewsArray, null, 2)}`
+						SPY Low news: ${JSON.stringify(marketLowNewsArray, null, 2)}
+						${symbol} Low news: ${JSON.stringify(tickerLowNewsArray, null, 2)}
+						SPY High news: ${JSON.stringify(marketHighNewsArray, null, 2)}
+						${symbol} High news: ${JSON.stringify(tickerHighNewsArray, null, 2)}`
 					}
 				]
 			}
