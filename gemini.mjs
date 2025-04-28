@@ -21,7 +21,7 @@ export async function getLowestPoint(marketData, tickerData, symbol) {
 						text:
 						`For each dataset find the lowest_closing_price, lowest_closing_price_date, lowest_closing_price_date_minus_1_week, lowest_closing_price_date_plus_1_week, highest_closing_price, highest_closing_price_date, highest_closing_price_date_minus_1_week, and highest_closing_price_date_plus_1_week. Then return your answer as JSON-valid in this format:
 						{
-							SPY: {
+							"SPY": {
 								"lowest_closing_price": "...",
 								"lowest_closing_price_date": "...",
 								"lowest_closing_price_date_minus_1_week": "...",
@@ -33,6 +33,7 @@ export async function getLowestPoint(marketData, tickerData, symbol) {
 							},
 							...
 						}
+
 						SPY data: ${JSON.stringify(marketArray, null, 2)}, 
 						${symbol} data: ${JSON.stringify(tickerArray, null, 2)}`
 					}
@@ -72,7 +73,7 @@ export async function askGemini(marketArray, tickerArray, articleData, symbol) {
 						
 						then return your answer as JSON-valid in this format:
 						{
-							SPY: {
+							"SPY": {
 								"lowest_closing_price": "...",
 								"lowest_closing_price_date": "...",
 								"lowest_closing_price_date_minus_1_week": "...",
@@ -82,49 +83,50 @@ export async function askGemini(marketArray, tickerArray, articleData, symbol) {
 								"highest_closing_price_date_minus_1_week": "...",
 								"highest_closing_price_date_plus_1_week": "..."
 							},
-							${symbol}: {
+							"${symbol}": {
 								"lowest_closing_price": "...",
 								"lowest_closing_price_date": "...",
 								"highest_closing_price": "...",
 								"highest_closing_price_date": "..."
 							},
-							factors: {
-								negative: [
+							"factors": {
+								"negative": [
 									{
-										factor: "..."
+										"factor": "..."
 									},
 									...
 								],
-								positive: [
+								"positive": [
 									{
-										factor: "..."
+										"factor": "..."
 									},
 									...
 								]
 							},
-							articles: {
-								Low: {
-									negative: [
+							"articles": {
+								"Low": {
+									"negative": [
 										{
-											created_at: "...",
-											headline: "...",
-											url: "..."
+											"created_at": "...",
+											"headline": "...",
+											"url": "..."
 										},
 										...
 									]
 								},
-								High: {
-									positive: [
+								"High": {
+									"positive": [
 										{
-											created_at: "...",
-											headline: "...",
-											url: "..."
+											"created_at": "...",
+											"headline": "...",
+											"url": "..."
 										},
 										...
 									]
 								}
 							}
 						}
+
 						SPY data: ${JSON.stringify(marketArray, null, 2)}
 						${symbol} data: ${JSON.stringify(tickerArray, null, 2)}
 
