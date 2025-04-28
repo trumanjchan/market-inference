@@ -1,5 +1,4 @@
 import { GoogleGenAI } from "@google/genai";
-import { marked } from 'marked';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -44,11 +43,17 @@ export async function getLowestPoint(marketData, tickerData, symbol) {
 			maxOutputTokens: 1024
 		}
 	});
-	const result = response.text;
+	const result = { answer: response.text, marketArray, tickerArray };
 	return result;
 }
 
-export async function askGemini(marketData, tickerData, articleData, symbol) {
+export async function askGemini(marketArray, tickerArray, articleData, symbol) {
+	const marketNewsOriginalArray = articleData.marketNews;
+	const tickerNewsOriginalArray = articleData.tickerNews;
+
+	const marketNewsArray = marketNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at, headline, url }));
+	const tickerNewsArray = tickerNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at, headline, url }));
+	
 	const response = await ai.models.generateContent({
 		model: "gemini-2.0-flash",
 		contents: [
@@ -57,23 +62,67 @@ export async function askGemini(marketData, tickerData, articleData, symbol) {
 				parts: [
 					{
 						text:
-						`Given the SPY and ${symbol} data, analyze the lowest closing price of SPY and ${symbol} and determine:
+						`Find the lowest_closing_price, lowest_closing_price_date, highest_closing_price, highest_closing_price_date,
+						determine the concise macroeconomic topics that led to the highest_closing_price and lowest_closing_price for ${symbol},
+						and find 5 positive/negative relevant articles that mention the macroeconomic topics that you picked,
+						
+						then return your answer as JSON-valid in this format:
+						{
+							SPY: {
+								"lowest_closing_price": "...",
+								"lowest_closing_price_date": "...",
+								"highest_closing_price": "...",
+								"highest_closing_price_date": "..."
+							},
+							${symbol}: {
+								"lowest_closing_price": "...",
+								"lowest_closing_price_date": "...",
+								"highest_closing_price": "...",
+								"highest_closing_price_date": "..."
+							},
+							factors: {
+								negative: [
+									{
+										factor: "..."
+									},
+									...
+								],
+								positive: [
+									{
+										factor: "..."
+									},
+									...
+								]
+							},
+							articles: {
+								negative: [
+									{
+										created_at: "...",
+										headline: "...",
+										url: "..."
+									},
+									...
+								],
+								positive: [
+									{
+										created_at: "...",
+										headline: "...",
+										url: "..."
+									},
+									...
+								]
+							}
+						}
+						SPY data: ${JSON.stringify(marketArray, null, 2)}
+						${symbol} data: ${JSON.stringify(tickerArray, null, 2)}
 
-						1) if there is a correlation
-						2) make judgement on whether it is due to earnings, mergers or acquisitions, Fed interest rate announcement, CPI report, jobs report, or unemployment report
-						3) pick and choose 10 articles that are likely factors that contributed to ${symbol}'s price dip. Include date published and article url.
-						markup text format without asterisks.
-
-						SPY data: ${JSON.stringify(marketData.bars.SPY, null, 2)}, 
-						${symbol} data: ${JSON.stringify(tickerData.bars[symbol], null, 2)}, 
-
-						SPY news: ${JSON.stringify(articleData.marketNews.news, null, 2)}
-						${symbol} news: ${JSON.stringify(articleData.tickerNews.news, null, 2)}`
+						SPY news: ${JSON.stringify(marketNewsArray, null, 2)}
+						${symbol} news: ${JSON.stringify(tickerNewsArray, null, 2)}`
 					}
 				]
 			}
 		]
 	});
-	const result = marked(response.candidates[0].content.parts[0].text);
+	const result = response.text;
 	return result;
 }

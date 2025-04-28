@@ -43,7 +43,20 @@
                 </div>
             </div>
 
-            <div id="answer"></div>
+            <div>
+                <div style="padding-left: 10px;">
+                    <div>Positive Factors</div>
+                    <div id="positive-factors"></div>
+                </div>
+                <ul id="positive-articles"></ul>
+            </div>
+            <div>
+                <div style="padding-left: 10px;">
+                    <div>Negative Factors</div>
+                    <div id="negative-factors"></div>
+                </div>
+                <ul id="negative-articles"></ul>
+            </div>
         </div>
 
 
@@ -57,11 +70,15 @@
 
             function search() {
                 // reset data before populating
-                //document.getElementById("direction").childNodes.forEach(element => {
-                //    element.innerText = null;
-                //})
                 document.getElementById("chart").innerText = null;
-                document.getElementById("answer").innerText = null;
+                document.getElementById("market-direction-low").innerText = null;
+                document.getElementById("market-direction-high").innerText = null;
+                document.getElementById("stock-direction-low").innerText = null;
+                document.getElementById("stock-direction-high").innerText = null;
+                document.getElementById("positive-factors").innerText = null;
+                document.getElementById("positive-articles").innerText = null;
+                document.getElementById("negative-factors").innerText = null;
+                document.getElementById("negative-articles").innerText = null;
                 
 
                 const input = document.getElementById('ticker');
@@ -180,7 +197,6 @@
                         const initialWidth = document.getElementById("chart").clientWidth;
                         const initialHeight = document.getElementById("chart").clientHeight;
                         const aspectRatio = initialWidth / initialHeight;
-
                         const resizeObserver = new ResizeObserver(entries => {
                             for (let entry of entries) {
                                 const { width } = entry.contentRect;
@@ -190,6 +206,7 @@
                             }
                         });
                         resizeObserver.observe(document.getElementById("chart"));
+                        chart.timeScale().fitContent();
 
                         const percentElements = document.querySelectorAll('.legend-return');
                         const observer = new MutationObserver((mutations) => {
@@ -229,6 +246,8 @@
                         fetch(`/${inputValue}/direction`)
                             .then(response => response.json())
                             .then(data => {
+                                //console.log(data);
+
                                 document.getElementById("market-direction-low").innerText = "Low: " + data.SPY.lowest_closing_price + " — " + formatDate(data.SPY.lowest_closing_price_date);
                                 document.getElementById("market-direction-high").innerText = "High: " + data.SPY.highest_closing_price + " — " + formatDate(data.SPY.highest_closing_price_date);
                                 document.getElementById("stock-direction-low").innerText = "Low: " + data[inputValue].lowest_closing_price + " — " + formatDate(data[inputValue].lowest_closing_price_date);
@@ -237,7 +256,21 @@
                                 fetch(`/${inputValue}/articles`)
                                     .then(response => response.json())
                                     .then(data => {
-                                        document.getElementById("answer").innerHTML = data;
+                                        //console.log(data);
+
+                                        document.getElementById("positive-factors").innerHTML = data.factors.positive.map(factor => {
+                                            return `<strong>${factor.factor}</strong>`
+                                        }).join("<br><br>");
+                                        document.getElementById("positive-articles").innerHTML = data.articles.positive.map(article => {
+                                            return `<div>${formatDate(article.created_at.substring(0, 10))} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
+                                        }).join("<br><br>");
+
+                                        document.getElementById("negative-factors").innerHTML = data.factors.negative.map(factor => {
+                                            return `<strong>${factor.factor}</strong>`
+                                        }).join("<br><br>");
+                                        document.getElementById("negative-articles").innerHTML = data.articles.negative.map(article => {
+                                            return `<div>${formatDate(article.created_at.substring(0, 10))} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
+                                        }).join("<br><br>");
                                     })
                                     .catch(error => console.error('Error fetching articles:', error));
                             })

@@ -31,7 +31,7 @@ app.get('/:symbol/direction', async (req, res) => {
 		const direction = await getLowestPoint(cache.marketData, cache.tickerData, req.params.symbol);
 
 		dataCache.set(req.params.symbol + "_direction", direction);
-		res.json(JSON.parse(direction.replace(/```json/g, '').replace(/```/g, '').trim()));
+		res.json(JSON.parse(direction.answer.replace(/```json/g, '').replace(/```/g, '').trim()));
 	} catch (error) {
 		console.error('API route error:', error);
 		res.status(500).json({ error: 'Failed to fetch data' });
@@ -43,14 +43,14 @@ app.get('/:symbol/articles', async (req, res) => {
 	try {
 		const { askGemini } = await import('./gemini.mjs');
 
-		let cache1 = dataCache.get(req.params.symbol + "_datasets");
-		let cache2 = dataCache.get(req.params.symbol + "_direction");
-		let validNewsData = cache2.replace(/```json/g, '').replace(/```/g, '').trim();
+		let cache = dataCache.get(req.params.symbol + "_direction");
+		let validNewsData = cache.answer.replace(/```json/g, '').replace(/```/g, '').trim();
 
 		const articleData = await getNews(JSON.parse(validNewsData), req.params.symbol);
-		const apiData = await askGemini(cache1.marketData, cache1.tickerData, articleData, req.params.symbol );
 
-		res.json(apiData);
+		const apiData = await askGemini(cache.marketArray, cache.tickerArray, articleData, req.params.symbol);
+
+		res.json(JSON.parse(apiData.replace(/```json/g, '').replace(/```/g, '').trim()));
 	} catch (error) {
 		console.error('API route error:', error);
 		res.status(500).json({ error: 'Failed to fetch data' });
