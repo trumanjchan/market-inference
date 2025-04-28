@@ -5,7 +5,7 @@ const path = require('path');
 const app = express();
 const port = 3000;
 
-const { getComparison, getNews } = require('./utils/helpers');
+const { getComparison, getLowHighPoints, getNews } = require('./utils/helpers');
 const dataCache = new Map();
 
 
@@ -25,13 +25,11 @@ app.get('/:symbol/datasets', async (req, res) => {
 
 app.get('/:symbol/direction', async (req, res) => {
 	try {
-		const { getLowestPoint } = await import('./gemini.mjs');
-
 		let cache = dataCache.get(req.params.symbol + "_datasets");
-		const direction = await getLowestPoint(cache.marketData, cache.tickerData, req.params.symbol);
+		const direction = await getLowHighPoints(cache.marketData, cache.tickerData, req.params.symbol);
 
 		dataCache.set(req.params.symbol + "_direction", direction);
-		res.json(JSON.parse(direction.answer.replace(/```json/g, '').replace(/```/g, '').trim()));
+		res.json(direction);
 	} catch (error) {
 		console.error('API route error:', error);
 		res.status(500).json({ error: 'Failed to fetch data' });
@@ -44,9 +42,7 @@ app.get('/:symbol/articles', async (req, res) => {
 		const { askGemini } = await import('./gemini.mjs');
 
 		let cache = dataCache.get(req.params.symbol + "_direction");
-		let validNewsData = cache.answer.replace(/```json/g, '').replace(/```/g, '').trim();
-
-		const articleData = await getNews(JSON.parse(validNewsData), req.params.symbol);
+		const articleData = await getNews(cache.weekData, req.params.symbol);
 
 		const apiData = await askGemini(cache.marketArray, cache.tickerArray, articleData, req.params.symbol);
 

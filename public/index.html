@@ -71,10 +71,6 @@
             function search() {
                 // reset data before populating
                 document.getElementById("chart").innerText = null;
-                document.getElementById("market-direction-low").innerText = null;
-                document.getElementById("market-direction-high").innerText = null;
-                document.getElementById("stock-direction-low").innerText = null;
-                document.getElementById("stock-direction-high").innerText = null;
                 document.getElementById("positive-factors").innerText = null;
                 document.getElementById("positive-articles").innerText = null;
                 document.getElementById("negative-factors").innerText = null;
@@ -87,6 +83,9 @@
                 fetch(`/${inputValue}/datasets`)
                     .then(response => response.json())
                     .then(data => {
+                        console.log(`/${inputValue}/datasets:`);
+                        console.log(data);
+
                         const chart = createChart(document.getElementById('chart'), {
                             width: 600,
                             height: 300,
@@ -246,17 +245,19 @@
                         fetch(`/${inputValue}/direction`)
                             .then(response => response.json())
                             .then(data => {
-                                //console.log(data);
+                                console.log(`/${inputValue}/direction:`);
+                                console.log(data);
 
-                                document.getElementById("market-direction-low").innerText = "Low: " + data.SPY.lowest_closing_price + " — " + formatDate(data.SPY.lowest_closing_price_date);
-                                document.getElementById("market-direction-high").innerText = "High: " + data.SPY.highest_closing_price + " — " + formatDate(data.SPY.highest_closing_price_date);
-                                document.getElementById("stock-direction-low").innerText = "Low: " + data[inputValue].lowest_closing_price + " — " + formatDate(data[inputValue].lowest_closing_price_date);
-                                document.getElementById("stock-direction-high").innerText = "High: " + data[inputValue].highest_closing_price + " — " + formatDate(data[inputValue].highest_closing_price_date);
+                                document.getElementById("market-direction-low").innerText = "Low: " + data.weekData.SPY.lowest_closing_price + " — " + formatDate(data.weekData.SPY.lowest_closing_price_date);
+                                document.getElementById("market-direction-high").innerText = "High: " + data.weekData.SPY.highest_closing_price + " — " + formatDate(data.weekData.SPY.highest_closing_price_date);
+                                document.getElementById("stock-direction-low").innerText = "Low: " + data.weekData.TICKER.lowest_closing_price + " — " + formatDate(data.weekData.TICKER.lowest_closing_price_date);
+                                document.getElementById("stock-direction-high").innerText = "High: " + data.weekData.TICKER.highest_closing_price + " — " + formatDate(data.weekData.TICKER.highest_closing_price_date);
                                 
                                 fetch(`/${inputValue}/articles`)
                                     .then(response => response.json())
                                     .then(data => {
-                                        //console.log(data);
+                                        console.log(`/${inputValue}/articles:`);
+                                        console.log(data);
 
                                         document.getElementById("positive-factors").innerHTML = data.factors.positive.map(factor => {
                                             return `<strong>${factor.factor}</strong>`

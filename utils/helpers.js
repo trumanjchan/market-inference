@@ -7,6 +7,18 @@ const options = {
 	}
 };
 
+function getWeekAgo(bool, date) {
+	const inputDate = new Date(date);
+	if (bool === true) {
+		inputDate.setDate(inputDate.getDate() - 7);
+	} else {
+		inputDate.setDate(inputDate.getDate() + 7);
+	}
+	const oneWeekAgo = inputDate.toISOString().split('T')[0];
+
+	return oneWeekAgo;
+}
+
 const getComparison = async (symbol) => {
 	const today = new Date();
 	const todayFormattedDate = today.toISOString().split('T')[0] + 'T00%3A00%3A00Z';
@@ -34,15 +46,44 @@ const getComparison = async (symbol) => {
 
 		return { marketData, tickerData };
 	} catch (error) {
-		console.error('Fetch error:', error);
+		console.error('Fetch getComparison() error:', error);
 	}
 };
 
-const getNews = async (articleData, symbol) => {
-	const marketLowNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${articleData.SPY.lowest_closing_price_date_minus_1_week}&end=${articleData.SPY.lowest_closing_price_date_plus_1_week}&sort=desc&symbols=SPY&limit=50`;
-	const tickerLowNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${articleData[symbol].lowest_closing_price_date_minus_1_week}&end=${articleData[symbol].lowest_closing_price_date_plus_1_week}&sort=desc&symbols=${symbol}&limit=50`;
-	const marketHighNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${articleData.SPY.highest_closing_price_date_minus_1_week}&end=${articleData.SPY.highest_closing_price_date_plus_1_week}&sort=desc&symbols=SPY&limit=50`;
-	const tickerHighNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${articleData[symbol].highest_closing_price_date_minus_1_week}&end=${articleData[symbol].highest_closing_price_date_plus_1_week}&sort=desc&symbols=${symbol}&limit=50`;
+const getLowHighPoints = async (marketData, tickerData, symbol) => {
+	try {
+		const marketDataOriginalArray = marketData.bars.SPY;
+		const tickerDataOriginalArray = tickerData.bars[symbol];
+		
+		const marketArray = marketDataOriginalArray.map(({ c, t }) => ({ c, t: t.substring(0, 10) }));
+		const tickerArray = tickerDataOriginalArray.map(({ c, t }) => ({ c, t: t.substring(0, 10) }));
+
+		var mLowestPoint = marketArray.reduce((min, curr) => curr.c < min.c ? curr : min);
+		mLowestPoint = { lowest_closing_price: mLowestPoint.c, lowest_closing_price_date: mLowestPoint.t, lowest_closing_price_date_weekago: getWeekAgo(true, mLowestPoint.t), lowest_closing_price_date_weekahead: getWeekAgo(false, mLowestPoint.t) };
+		var mHighestPoint = marketArray.reduce((max, curr) => curr.c > max.c ? curr : max);
+		mHighestPoint = { highest_closing_price: mHighestPoint.c, highest_closing_price_date: mHighestPoint.t, highest_closing_price_date_weekago: getWeekAgo(true, mHighestPoint.t), highest_closing_price_date_weekahead: getWeekAgo(false, mHighestPoint.t) };
+		let SPY = { ...mLowestPoint, ...mHighestPoint };
+
+		var tLowestPoint = tickerArray.reduce((min, curr) => curr.c < min.c ? curr : min);
+		tLowestPoint = { lowest_closing_price: tLowestPoint.c, lowest_closing_price_date: tLowestPoint.t, lowest_closing_price_date_weekago: getWeekAgo(true, tLowestPoint.t), lowest_closing_price_date_weekahead: getWeekAgo(false, tLowestPoint.t) };
+		var tHighestPoint = tickerArray.reduce((max, curr) => curr.c > max.c ? curr : max);
+		tHighestPoint = { highest_closing_price: tHighestPoint.c, highest_closing_price_date: tHighestPoint.t, highest_closing_price_date_weekago: getWeekAgo(true, tHighestPoint.t), highest_closing_price_date_weekahead: getWeekAgo(false, tHighestPoint.t) };
+		let TICKER = { ...tLowestPoint, ...tHighestPoint };
+		
+		let weekData = { SPY, TICKER };
+
+		const result = { weekData, marketArray, tickerArray };
+	return result;
+	} catch (error) {
+		console.error('Fetch getLowHighPoints() error:', error);
+	}
+}
+
+const getNews = async (weekData, symbol) => {
+	const marketLowNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${weekData.SPY.lowest_closing_price_date_weekago}&end=${weekData.SPY.lowest_closing_price_date_weekahead}&sort=desc&symbols=SPY&limit=50`;
+	const tickerLowNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${weekData.TICKER.lowest_closing_price_date_weekago}&end=${weekData.TICKER.lowest_closing_price_date_weekahead}&sort=desc&symbols=${symbol}&limit=50`;
+	const marketHighNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${weekData.SPY.highest_closing_price_date_weekago}&end=${weekData.SPY.highest_closing_price_date_weekahead}&sort=desc&symbols=SPY&limit=50`;
+	const tickerHighNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${weekData.TICKER.highest_closing_price_date_weekago}&end=${weekData.TICKER.highest_closing_price_date_weekahead}&sort=desc&symbols=${symbol}&limit=50`;
 
 	try {
 		const [marketLowNewsResponse, tickerLowNewsResponse, marketHighNewsResponse, tickerHighNewsResponse] = await Promise.all([
@@ -66,12 +107,13 @@ const getNews = async (articleData, symbol) => {
 		
 		return { marketLowNews, tickerLowNews, marketHighNews, tickerHighNews };
 	} catch (error) {
-		console.error('Fetch error:', error);
+		console.error('Fetch getNews() error:', error);
 	}
 }
 
 
 module.exports = {
 	getComparison,
+	getLowHighPoints,
 	getNews
 };
