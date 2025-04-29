@@ -4,7 +4,7 @@ dotenv.config();
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-export async function askGemini(marketArray, tickerArray, articleData, symbol) {
+export async function askGemini(weekData, articleData, symbol) {
 	const marketLowNewsOriginalArray = articleData.marketLowNews;
 	const tickerLowNewsOriginalArray = articleData.tickerLowNews;
 	const marketLowNewsArray = marketLowNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at, headline, url }));
@@ -23,28 +23,16 @@ export async function askGemini(marketArray, tickerArray, articleData, symbol) {
 				parts: [
 					{
 						text:
-						`Find the lowest_closing_price, lowest_closing_price_date, lowest_closing_price_date_minus_1_week, lowest_closing_price_date_plus_1_week, highest_closing_price, highest_closing_price_date, highest_closing_price_date_minus_1_week, highest_closing_price_date_plus_1_week,
-						determine concisely the macroeconomic topics that led to the highest_closing_price and lowest_closing_price for ${symbol},
-						find 5 negative relevant articles between lowest_closing_price_date_minus_1_week and lowest_closing_price_date_plus_1_week, and 5 positive relevant articles between highest_closing_price_date_minus_1_week and highest_closing_price_date_plus_1_week that mention the macroeconomic topics that you picked from the Low news and High news for ${symbol},
+						`Determine the macroeconomic factors that contributed to the highest and lowest closing prices for ${symbol}. 
+
+						1. Identify the macroeconomic topics that led to the highest closing price and lowest closing price.
+						2. Find 5 relevant negative articles related to these topics between the dates of the lowest_closing_price (from ${symbol} lowest_closing_price_date_weekago to ${symbol} lowest_closing_price_date_weekahead).
+						3. Find 5 relevant positive articles between the dates of the highest_closing_price (from ${symbol} highest_closing_price_date_weekago to ${symbol} highest_closing_price_date_weekahead).
+						4. Each article should mention the macroeconomic topics selected from the SPY and ${symbol} Low/High news.
 						
-						then return your answer as JSON-valid in this format:
+						Return the results in the following JSON format:
+
 						{
-							"SPY": {
-								"lowest_closing_price": "...",
-								"lowest_closing_price_date": "...",
-								"lowest_closing_price_date_minus_1_week": "...",
-								"lowest_closing_price_date_plus_1_week": "...",
-								"highest_closing_price": "...",
-								"highest_closing_price_date": "...",
-								"highest_closing_price_date_minus_1_week": "...",
-								"highest_closing_price_date_plus_1_week": "..."
-							},
-							"${symbol}": {
-								"lowest_closing_price": "...",
-								"lowest_closing_price_date": "...",
-								"highest_closing_price": "...",
-								"highest_closing_price_date": "..."
-							},
 							"factors": {
 								"negative": [
 									{
@@ -82,9 +70,15 @@ export async function askGemini(marketArray, tickerArray, articleData, symbol) {
 								}
 							}
 						}
+						
+						For the following data:
 
-						SPY data: ${JSON.stringify(marketArray, null, 2)}
-						${symbol} data: ${JSON.stringify(tickerArray, null, 2)}
+						${symbol} highest_closing_price: ${weekData.TICKER.highest_closing_price}
+						${symbol} highest_closing_price_date_weekago: ${weekData.TICKER.highest_closing_price_date_weekago}
+						${symbol} highest_closing_price_date_weekahead: ${weekData.TICKER.highest_closing_price_date_weekahead}
+						${symbol} lowest_closing_price: ${weekData.TICKER.lowest_closing_price}
+						${symbol} lowest_closing_price_date_weekago: ${weekData.TICKER.lowest_closing_price_date_weekago}
+						${symbol} lowest_closing_price_date_weekahead: ${weekData.TICKER.lowest_closing_price_date_weekahead}
 
 						SPY Low news: ${JSON.stringify(marketLowNewsArray, null, 2)}
 						${symbol} Low news: ${JSON.stringify(tickerLowNewsArray, null, 2)}

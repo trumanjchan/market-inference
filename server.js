@@ -44,7 +44,7 @@ app.get('/:symbol/articles', async (req, res) => {
 		let cache = dataCache.get(req.params.symbol + "_direction");
 		const articleData = await getNews(cache.weekData, req.params.symbol);
 
-		const apiData = await askGemini(cache.marketArray, cache.tickerArray, articleData, req.params.symbol);
+		const apiData = await askGemini(cache.weekData, articleData, req.params.symbol);
 
 		res.json(JSON.parse(apiData.replace(/```json/g, '').replace(/```/g, '').trim()));
 	} catch (error) {

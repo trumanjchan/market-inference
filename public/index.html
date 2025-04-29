@@ -260,15 +260,37 @@
                                         console.log(data);
 
                                         document.getElementById("positive-factors").innerHTML = data.factors.positive.map(factor => {
-                                            return `<strong>${factor.factor}</strong>`
-                                        }).join("<br><br>");
+                                            if (factor.factor.includes(":")) {
+                                                const parts = factor.factor.split(":");
+                                                return `
+                                                    <div>
+                                                        <strong>${parts[0]}</strong>
+                                                        <br>
+                                                        <div>${parts[1]}</div>
+                                                    </div>
+                                                `;
+                                            } else {
+                                                return `<strong>${factor.factor}</strong><br>`;
+                                            }
+                                        }).join("<br>");
                                         document.getElementById("positive-articles").innerHTML = data.articles.High.positive.map(article => {
                                             return `<div>${formatDate(article.created_at.substring(0, 10))} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
                                         }).join("<br><br>");
 
                                         document.getElementById("negative-factors").innerHTML = data.factors.negative.map(factor => {
-                                            return `<strong>${factor.factor}</strong>`
-                                        }).join("<br><br>");
+                                            if (factor.factor.includes(":")) {
+                                                const parts = factor.factor.split(":");
+                                                return `
+                                                    <div>
+                                                        <strong>${parts[0]}</strong>
+                                                        <br>
+                                                        <div>${parts[1]}</div>
+                                                    </div>
+                                                `;
+                                            } else {
+                                                return `<strong>${factor.factor}</strong><br>`;
+                                            }
+                                        }).join("<br>");
                                         document.getElementById("negative-articles").innerHTML = data.articles.Low.negative.map(article => {
                                             return `<div>${formatDate(article.created_at.substring(0, 10))} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
                                         }).join("<br><br>");
