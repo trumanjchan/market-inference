@@ -48,8 +48,8 @@ app.get('/:symbol/articles', async (req, res) => {
 
 		res.json(JSON.parse(apiData.replace(/```json/g, '').replace(/```/g, '').trim()));
 	} catch (error) {
-		console.error('API route error:', error);
-		res.status(500).json({ error: 'Failed to fetch data' });
+		console.error('API route error:', error.message);
+		res.status(500).json(error.message);
 	}
 });
 

@@ -21,6 +21,11 @@ body {
     width: 100%;
   }
 }
+@media screen and (max-width: 600px) {
+  .chart-and-legend #chart {
+    padding-right: 10px;
+  }
+}
 .chart-and-legend .legend {
   display: flex;
   flex-direction: column;

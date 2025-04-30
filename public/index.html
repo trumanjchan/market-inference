@@ -44,18 +44,18 @@
             </div>
 
             <div>
-                <div style="padding-left: 10px;">
+                <div style="padding-left: 10px; padding-right: 10px;">
                     <div>Positive Factors</div>
                     <div id="positive-factors"></div>
                 </div>
-                <ul id="positive-articles"></ul>
+                <ul id="positive-articles" style="padding-right: 10px;"></ul>
             </div>
             <div>
-                <div style="padding-left: 10px;">
+                <div style="padding-left: 10px; padding-right: 10px;">
                     <div>Negative Factors</div>
                     <div id="negative-factors"></div>
                 </div>
-                <ul id="negative-articles"></ul>
+                <ul id="negative-articles" style="padding-right: 10px;"></ul>
             </div>
         </div>
 
@@ -70,7 +70,9 @@
 
             function search() {
                 // reset data before populating
+                console.clear();
                 document.getElementById("chart").innerText = null;
+                document.getElementById("stock-legend-title").innerText = null;
                 document.getElementById("positive-factors").innerText = null;
                 document.getElementById("positive-articles").innerText = null;
                 document.getElementById("negative-factors").innerText = null;
@@ -121,7 +123,14 @@
                                 horzLine: {
                                     visible: false
                                 }
-                            }
+                            },
+                            handleScroll: false,
+                            handleScale: {
+                                mouseWheel: false,
+                                pinch: false,
+                                axisPressedMouseMove: false,
+                                doubleClick: false
+                            },
                         });
 
                         const Market = chart.addLineSeries({
@@ -259,7 +268,7 @@
                                         console.log(`/${inputValue}/articles:`);
                                         console.log(data);
 
-                                        document.getElementById("positive-factors").innerHTML = data.factors.positive.map(factor => {
+                                        document.getElementById("positive-factors").innerHTML = data.positive.factors.map(factor => {
                                             if (factor.factor.includes(":")) {
                                                 const parts = factor.factor.split(":");
                                                 return `
@@ -273,11 +282,11 @@
                                                 return `<strong>${factor.factor}</strong><br>`;
                                             }
                                         }).join("<br>");
-                                        document.getElementById("positive-articles").innerHTML = data.articles.High.positive.map(article => {
+                                        document.getElementById("positive-articles").innerHTML = data.positive.articles.map(article => {
                                             return `<div>${formatDate(article.created_at.substring(0, 10))} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
                                         }).join("<br><br>");
 
-                                        document.getElementById("negative-factors").innerHTML = data.factors.negative.map(factor => {
+                                        document.getElementById("negative-factors").innerHTML = data.negative.factors.map(factor => {
                                             if (factor.factor.includes(":")) {
                                                 const parts = factor.factor.split(":");
                                                 return `
@@ -291,7 +300,7 @@
                                                 return `<strong>${factor.factor}</strong><br>`;
                                             }
                                         }).join("<br>");
-                                        document.getElementById("negative-articles").innerHTML = data.articles.Low.negative.map(article => {
+                                        document.getElementById("negative-articles").innerHTML = data.negative.articles.map(article => {
                                             return `<div>${formatDate(article.created_at.substring(0, 10))} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
                                         }).join("<br><br>");
                                     })

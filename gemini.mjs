@@ -23,67 +23,50 @@ export async function askGemini(weekData, articleData, symbol) {
 				parts: [
 					{
 						text:
-						`Determine the macroeconomic factors that contributed to the highest and lowest closing prices for ${symbol}. 
-
-						1. Identify the macroeconomic topics that led to the highest closing price and lowest closing price.
-						2. Find 5 relevant negative articles related to these topics between the dates of the lowest_closing_price (from ${symbol} lowest_closing_price_date_weekago to ${symbol} lowest_closing_price_date_weekahead).
-						3. Find 5 relevant positive articles between the dates of the highest_closing_price (from ${symbol} highest_closing_price_date_weekago to ${symbol} highest_closing_price_date_weekahead).
-						4. Each article should mention the macroeconomic topics selected from the SPY and ${symbol} Low/High news.
+						`1. Determine concisely the positive macroeconomic factors and find 6 relevant articles that mention ${symbol} between ${weekData.TICKER.highest_closing_price_date_weekago} and ${weekData.TICKER.highest_closing_price_date_weekahead} from SPY-High-News and ${symbol}-High-News.
+						2. Determine concisely the negative macroeconomic factors and find 6 relevant articles that mention ${symbol} between ${weekData.TICKER.lowest_closing_price_date_weekago} and ${weekData.TICKER.lowest_closing_price_date_weekahead} from SPY-Low-News and ${symbol}-Low-News.
 						
 						Return the results in the following JSON format:
-
 						{
-							"factors": {
-								"negative": [
+							"positive": {
+								"factors": [
 									{
 										"factor": "..."
 									},
 									...
 								],
-								"positive": [
+								"articles": [
 									{
-										"factor": "..."
+										"created_at": "...",
+										"headline": "...",
+										"url": "..."
 									},
 									...
 								]
 							},
-							"articles": {
-								"Low": {
-									"negative": [
-										{
-											"created_at": "...",
-											"headline": "...",
-											"url": "..."
-										},
-										...
-									]
-								},
-								"High": {
-									"positive": [
-										{
-											"created_at": "...",
-											"headline": "...",
-											"url": "..."
-										},
-										...
-									]
-								}
+							"negative": {
+								"factors": [
+									{
+										"factor": "..."
+									},
+									...
+								],
+								"articles": [
+									{
+										"created_at": "...",
+										"headline": "...",
+										"url": "..."
+									},
+									...
+								]
 							}
 						}
+
+						SPY-High-News: ${JSON.stringify(marketHighNewsArray, null, 2)}
+						${symbol}-High-News: ${JSON.stringify(tickerHighNewsArray, null, 2)}
 						
-						For the following data:
-
-						${symbol} highest_closing_price: ${weekData.TICKER.highest_closing_price}
-						${symbol} highest_closing_price_date_weekago: ${weekData.TICKER.highest_closing_price_date_weekago}
-						${symbol} highest_closing_price_date_weekahead: ${weekData.TICKER.highest_closing_price_date_weekahead}
-						${symbol} lowest_closing_price: ${weekData.TICKER.lowest_closing_price}
-						${symbol} lowest_closing_price_date_weekago: ${weekData.TICKER.lowest_closing_price_date_weekago}
-						${symbol} lowest_closing_price_date_weekahead: ${weekData.TICKER.lowest_closing_price_date_weekahead}
-
-						SPY Low news: ${JSON.stringify(marketLowNewsArray, null, 2)}
-						${symbol} Low news: ${JSON.stringify(tickerLowNewsArray, null, 2)}
-						SPY High news: ${JSON.stringify(marketHighNewsArray, null, 2)}
-						${symbol} High news: ${JSON.stringify(tickerHighNewsArray, null, 2)}`
+						SPY-Low-News: ${JSON.stringify(marketLowNewsArray, null, 2)}
+						${symbol}-Low-News: ${JSON.stringify(tickerLowNewsArray, null, 2)}`
 					}
 				]
 			}

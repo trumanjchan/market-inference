@@ -80,9 +80,9 @@ const getLowHighPoints = async (marketData, tickerData, symbol) => {
 }
 
 const getNews = async (weekData, symbol) => {
-	const marketLowNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${weekData.SPY.lowest_closing_price_date_weekago}&end=${weekData.SPY.lowest_closing_price_date_weekahead}&sort=desc&symbols=SPY&limit=50`;
+	const marketLowNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${weekData.TICKER.lowest_closing_price_date_weekago}&end=${weekData.TICKER.lowest_closing_price_date_weekahead}&sort=desc&symbols=SPY&limit=50`;
 	const tickerLowNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${weekData.TICKER.lowest_closing_price_date_weekago}&end=${weekData.TICKER.lowest_closing_price_date_weekahead}&sort=desc&symbols=${symbol}&limit=50`;
-	const marketHighNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${weekData.SPY.highest_closing_price_date_weekago}&end=${weekData.SPY.highest_closing_price_date_weekahead}&sort=desc&symbols=SPY&limit=50`;
+	const marketHighNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${weekData.TICKER.highest_closing_price_date_weekago}&end=${weekData.TICKER.highest_closing_price_date_weekahead}&sort=desc&symbols=SPY&limit=50`;
 	const tickerHighNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${weekData.TICKER.highest_closing_price_date_weekago}&end=${weekData.TICKER.highest_closing_price_date_weekahead}&sort=desc&symbols=${symbol}&limit=50`;
 
 	try {

@@ -19,6 +19,12 @@ body {
         width: 100%;
     }
 
+    #chart {
+        @media screen and (max-width: 600px) {
+            padding-right: 10px;
+        }
+    }
+
     .legend {
         display: flex;
         flex-direction: column;
