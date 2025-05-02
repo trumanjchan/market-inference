@@ -43,19 +43,19 @@
                 </div>
             </div>
 
-            <div>
-                <div style="padding-left: 10px; padding-right: 10px;">
-                    <div>Positive Factors</div>
-                    <div id="positive-factors"></div>
+            <div style="padding: 0 20px; margin-top: 40px;">
+                <div>
+                    <div class="positive factors-title">Positive Factors</div>
+                    <div id="positive-factors" style="margin-top: 20px;"></div>
                 </div>
-                <ul id="positive-articles" style="padding-right: 10px;"></ul>
+                <ul id="positive-articles" style="margin: 20px 0;"></ul>
             </div>
-            <div>
-                <div style="padding-left: 10px; padding-right: 10px;">
-                    <div>Negative Factors</div>
-                    <div id="negative-factors"></div>
+            <div style="padding: 0 20px; margin-top: 40px; margin-bottom: 40px;">
+                <div>
+                    <div class="negative factors-title">Negative Factors</div>
+                    <div id="negative-factors" style="margin-top: 20px;"></div>
                 </div>
-                <ul id="negative-articles" style="padding-right: 10px;"></ul>
+                <ul id="negative-articles" style="margin: 20px 0;"></ul>
             </div>
         </div>
 
@@ -89,7 +89,7 @@
                         console.log(data);
 
                         const chart = createChart(document.getElementById('chart'), {
-                            width: 600,
+                            width: 700,
                             height: 300,
                             leftPriceScale: {
                                 visible: true,
@@ -262,53 +262,31 @@
                                 document.getElementById("stock-direction-low").innerText = "Low: " + data.weekData.TICKER.lowest_closing_price + " — " + formatDate(data.weekData.TICKER.lowest_closing_price_date);
                                 document.getElementById("stock-direction-high").innerText = "High: " + data.weekData.TICKER.highest_closing_price + " — " + formatDate(data.weekData.TICKER.highest_closing_price_date);
                                 
-                                fetch(`/${inputValue}/articles`)
+                                fetch(`/${inputValue}/gemini`)
                                     .then(response => response.json())
                                     .then(data => {
-                                        console.log(`/${inputValue}/articles:`);
+                                        console.log(`/${inputValue}/gemini:`);
                                         console.log(data);
 
                                         document.getElementById("positive-factors").innerHTML = data.positive.factors.map(factor => {
-                                            if (factor.factor.includes(":")) {
-                                                const parts = factor.factor.split(":");
-                                                return `
-                                                    <div>
-                                                        <strong>${parts[0]}</strong>
-                                                        <br>
-                                                        <div>${parts[1]}</div>
-                                                    </div>
-                                                `;
-                                            } else {
-                                                return `<strong>${factor.factor}</strong><br>`;
-                                            }
+                                            return `<strong>${factor.factor}</strong><br>`;
                                         }).join("<br>");
                                         document.getElementById("positive-articles").innerHTML = data.positive.articles.map(article => {
-                                            return `<div>${formatDate(article.created_at.substring(0, 10))} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
+                                            return `<div>${formatDate(article.created_at)} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
                                         }).join("<br><br>");
 
                                         document.getElementById("negative-factors").innerHTML = data.negative.factors.map(factor => {
-                                            if (factor.factor.includes(":")) {
-                                                const parts = factor.factor.split(":");
-                                                return `
-                                                    <div>
-                                                        <strong>${parts[0]}</strong>
-                                                        <br>
-                                                        <div>${parts[1]}</div>
-                                                    </div>
-                                                `;
-                                            } else {
-                                                return `<strong>${factor.factor}</strong><br>`;
-                                            }
+                                            return `<strong>${factor.factor}</strong><br>`;
                                         }).join("<br>");
                                         document.getElementById("negative-articles").innerHTML = data.negative.articles.map(article => {
-                                            return `<div>${formatDate(article.created_at.substring(0, 10))} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
+                                            return `<div>${formatDate(article.created_at)} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
                                         }).join("<br><br>");
                                     })
-                                    .catch(error => console.error('Error fetching articles:', error));
+                                    .catch(error => console.error(`Error fetching /${inputValue}/gemini:`, error));
                             })
-                            .catch(error => console.error('Error fetching direction:', error));
+                            .catch(error => console.error(`Error fetching /${inputValue}/direction:`, error));
                     })
-                    .catch(error => console.error('Error fetching datasets:', error));
+                    .catch(error => console.error(`Error fetching /${inputValue}/datasets:`, error));
             }
             window.search = search;
         </script>

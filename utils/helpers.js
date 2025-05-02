@@ -14,19 +14,19 @@ function getWeekAgo(bool, date) {
 	} else {
 		inputDate.setDate(inputDate.getDate() + 7);
 	}
-	const oneWeekAgo = inputDate.toISOString().split('T')[0];
+	const oneWeekAgo = inputDate.toISOString().substring(0, 10);
 
 	return oneWeekAgo;
 }
 
 const getComparison = async (symbol) => {
 	const today = new Date();
-	const todayFormattedDate = today.toISOString().split('T')[0] + 'T00%3A00%3A00Z';
+	const todayFormattedDate = today.toISOString().substring(0, 10);
 	today.setFullYear(today.getFullYear() - 1);
-	const yearAgoFormattedDate = today.toISOString().split('T')[0] + 'T00%3A00%3A00Z';
+	const yearAgoFormattedDate = today.toISOString().substring(0, 10);
 
-	const marketUrl = `https://data.alpaca.markets/v2/stocks/bars?symbols=SPY&timeframe=1Day&start=${yearAgoFormattedDate}&end=${todayFormattedDate}&limit=2000&adjustment=split&feed=sip&sort=asc`;
-	const symbolUrl = `https://data.alpaca.markets/v2/stocks/bars?symbols=${symbol}&timeframe=1Day&start=${yearAgoFormattedDate}&end=${todayFormattedDate}&limit=2000&adjustment=split&feed=sip&sort=asc`;
+	const marketUrl = `https://data.alpaca.markets/v2/stocks/bars?symbols=SPY&timeframe=1Day&start=${yearAgoFormattedDate}&end=${todayFormattedDate}&limit=365&adjustment=split&feed=iex&sort=asc`;
+	const symbolUrl = `https://data.alpaca.markets/v2/stocks/bars?symbols=${symbol}&timeframe=1Day&start=${yearAgoFormattedDate}&end=${todayFormattedDate}&limit=365&adjustment=split&feed=iex&sort=asc`;
 
 	try {
 		const [response1, response2] = await Promise.all([
@@ -59,9 +59,9 @@ const getLowHighPoints = async (marketData, tickerData, symbol) => {
 		const tickerArray = tickerDataOriginalArray.map(({ c, t }) => ({ c, t: t.substring(0, 10) }));
 
 		var mLowestPoint = marketArray.reduce((min, curr) => curr.c < min.c ? curr : min);
-		mLowestPoint = { lowest_closing_price: mLowestPoint.c, lowest_closing_price_date: mLowestPoint.t, lowest_closing_price_date_weekago: getWeekAgo(true, mLowestPoint.t), lowest_closing_price_date_weekahead: getWeekAgo(false, mLowestPoint.t) };
+		mLowestPoint = { lowest_closing_price: mLowestPoint.c, lowest_closing_price_date: mLowestPoint.t };
 		var mHighestPoint = marketArray.reduce((max, curr) => curr.c > max.c ? curr : max);
-		mHighestPoint = { highest_closing_price: mHighestPoint.c, highest_closing_price_date: mHighestPoint.t, highest_closing_price_date_weekago: getWeekAgo(true, mHighestPoint.t), highest_closing_price_date_weekahead: getWeekAgo(false, mHighestPoint.t) };
+		mHighestPoint = { highest_closing_price: mHighestPoint.c, highest_closing_price_date: mHighestPoint.t };
 		let SPY = { ...mLowestPoint, ...mHighestPoint };
 
 		var tLowestPoint = tickerArray.reduce((min, curr) => curr.c < min.c ? curr : min);

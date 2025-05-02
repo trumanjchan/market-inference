@@ -7,24 +7,25 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 export async function askGemini(weekData, articleData, symbol) {
 	const marketLowNewsOriginalArray = articleData.marketLowNews;
 	const tickerLowNewsOriginalArray = articleData.tickerLowNews;
-	const marketLowNewsArray = marketLowNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at, headline, url }));
-	const tickerLowNewsArray = tickerLowNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at, headline, url }));
+	const marketLowNewsArray = marketLowNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at: created_at.substring(0, 10), headline, url }));
+	const tickerLowNewsArray = tickerLowNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at: created_at.substring(0, 10), headline, url }));
 
 	const marketHighNewsOriginalArray = articleData.marketHighNews;
 	const tickerHighNewsOriginalArray = articleData.tickerHighNews;
-	const marketHighNewsArray = marketHighNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at, headline, url }));
-	const tickerHighNewsArray = tickerHighNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at, headline, url }));
+	const marketHighNewsArray = marketHighNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at: created_at.substring(0, 10), headline, url }));
+	const tickerHighNewsArray = tickerHighNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at: created_at.substring(0, 10), headline, url }));
 	
 	const response = await ai.models.generateContent({
-		model: "gemini-2.0-flash",
+		model: process.env.GEMINI_MODEL,
 		contents: [
 			{
 				role: "user",
 				parts: [
 					{
 						text:
-						`1. Determine concisely the positive macroeconomic factors and find 6 relevant articles that mention ${symbol} between ${weekData.TICKER.highest_closing_price_date_weekago} and ${weekData.TICKER.highest_closing_price_date_weekahead} from SPY-High-News and ${symbol}-High-News.
-						2. Determine concisely the negative macroeconomic factors and find 6 relevant articles that mention ${symbol} between ${weekData.TICKER.lowest_closing_price_date_weekago} and ${weekData.TICKER.lowest_closing_price_date_weekahead} from SPY-Low-News and ${symbol}-Low-News.
+						`1. Determine the positive macroeconomic factors and find 5 relevant articles that mention ${symbol} between ${weekData.TICKER.highest_closing_price_date_weekago} and ${weekData.TICKER.highest_closing_price_date_weekahead} from SPY-High-News and ${symbol}-High-News.
+						2. Determine the negative macroeconomic factors and find 5 relevant articles that mention ${symbol} between ${weekData.TICKER.lowest_closing_price_date_weekago} and ${weekData.TICKER.lowest_closing_price_date_weekahead} from SPY-Low-News and ${symbol}-Low-News.
+						For "factor", summarize it in a few short phrases or keywords (no full sentences). Keep it under 10 words.
 						
 						Return the results in the following JSON format:
 						{

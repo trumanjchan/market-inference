@@ -87,4 +87,18 @@ body {
   border-radius: 8px;
 }
 
+.factors-title {
+  width: fit-content;
+  padding: 5px 15px;
+  border-radius: 8px;
+}
+.factors-title.positive {
+  color: rgb(19, 115, 51);
+  background-color: rgb(230, 244, 234);
+}
+.factors-title.negative {
+  color: rgb(165, 14, 14);
+  background-color: rgb(252, 232, 230);
+}
+
 /*# sourceMappingURL=styles.css.map */

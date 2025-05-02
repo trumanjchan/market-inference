@@ -12,6 +12,14 @@ const dataCache = new Map();
 app.use(express.static('public'));
 
 app.get('/:symbol/datasets', async (req, res) => {
+	if (dataCache.get(req.params.symbol + "_datasets")) {
+		let cache = dataCache.get(req.params.symbol + "_datasets");
+		let marketData = cache.marketData;
+		let tickerData = cache.tickerData;
+		res.json({ marketData, tickerData });
+		return
+	}
+
 	try {
 		const { marketData, tickerData } = await getComparison(req.params.symbol);
 
@@ -24,6 +32,12 @@ app.get('/:symbol/datasets', async (req, res) => {
 });
 
 app.get('/:symbol/direction', async (req, res) => {
+	if (dataCache.get(req.params.symbol + "_direction")) {
+		let cache = dataCache.get(req.params.symbol + "_direction");
+		res.json(cache);
+		return
+	}
+
 	try {
 		let cache = dataCache.get(req.params.symbol + "_datasets");
 		const direction = await getLowHighPoints(cache.marketData, cache.tickerData, req.params.symbol);
@@ -37,7 +51,13 @@ app.get('/:symbol/direction', async (req, res) => {
 	return
 });
 
-app.get('/:symbol/articles', async (req, res) => {
+app.get('/:symbol/gemini', async (req, res) => {
+	if (dataCache.get(req.params.symbol + "_gemini")) {
+		let cache = dataCache.get(req.params.symbol + "_gemini");
+		res.json(cache);
+		return
+	}
+
 	try {
 		const { askGemini } = await import('./gemini.mjs');
 
@@ -46,9 +66,10 @@ app.get('/:symbol/articles', async (req, res) => {
 
 		const apiData = await askGemini(cache.weekData, articleData, req.params.symbol);
 
+		dataCache.set(req.params.symbol + "_gemini", JSON.parse(apiData.replace(/```json/g, '').replace(/```/g, '').trim()));
 		res.json(JSON.parse(apiData.replace(/```json/g, '').replace(/```/g, '').trim()));
 	} catch (error) {
-		console.error('API route error:', error.message);
+		console.error(error.message);
 		res.status(500).json(error.message);
 	}
 });
