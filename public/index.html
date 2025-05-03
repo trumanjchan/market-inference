@@ -12,8 +12,10 @@
             <div style="display: flex; flex-direction: row;">
                 <div class="chart-and-legend">
                     <div style="width: fit-content; margin: auto;">
-                        <input type="text" id="ticker" name="ticker" placeholder="NVDA">
-                        <button onclick="search()">Search</button>
+                        <form onsubmit="search()">
+                            <input type="text" id="ticker" name="ticker" placeholder="NVDA">
+                            <button type="submit" onclick="search()">Search</button>
+                        </form>
                     </div>
                     <div id="chart"></div>
                     <div class="legend">
@@ -63,6 +65,12 @@
         <script type="module">
             import { createChart, PriceScaleMode } from 'https://cdn.skypack.dev/lightweight-charts@4.1.0';
 
+            const pathValue = window.location.pathname.substring(1);
+            if (pathValue) {
+                document.getElementById("ticker").value = pathValue.trim().toUpperCase();
+                search();
+            }
+
             const formatDate = d => {
                 const [year, month, day] = d.split('-');
                 return `${day} ${new Date(`${year}-${month}-01T00:00:00Z`).toLocaleString('en-US', { month: 'short', timeZone: 'UTC' })} '${year.slice(2)}`;
@@ -81,6 +89,7 @@
 
                 const input = document.getElementById('ticker');
                 const inputValue = input.value.trim().toUpperCase() || input.placeholder;
+                history.pushState({}, '', `/${inputValue}`);
 
                 fetch(`/${inputValue}/datasets`)
                     .then(response => response.json())
@@ -89,7 +98,7 @@
                         console.log(data);
 
                         const chart = createChart(document.getElementById('chart'), {
-                            width: 700,
+                            width: 600,
                             height: 300,
                             leftPriceScale: {
                                 visible: true,

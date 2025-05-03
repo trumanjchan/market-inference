@@ -59,15 +59,15 @@ const getLowHighPoints = async (marketData, tickerData, symbol) => {
 		const tickerArray = tickerDataOriginalArray.map(({ c, t }) => ({ c, t: t.substring(0, 10) }));
 
 		var mLowestPoint = marketArray.reduce((min, curr) => curr.c < min.c ? curr : min);
-		mLowestPoint = { lowest_closing_price: mLowestPoint.c, lowest_closing_price_date: mLowestPoint.t };
+		mLowestPoint = { "lowest_closing_price": mLowestPoint.c, "lowest_closing_price_date": mLowestPoint.t };
 		var mHighestPoint = marketArray.reduce((max, curr) => curr.c > max.c ? curr : max);
-		mHighestPoint = { highest_closing_price: mHighestPoint.c, highest_closing_price_date: mHighestPoint.t };
+		mHighestPoint = { "highest_closing_price": mHighestPoint.c, "highest_closing_price_date": mHighestPoint.t };
 		let SPY = { ...mLowestPoint, ...mHighestPoint };
 
 		var tLowestPoint = tickerArray.reduce((min, curr) => curr.c < min.c ? curr : min);
-		tLowestPoint = { lowest_closing_price: tLowestPoint.c, lowest_closing_price_date: tLowestPoint.t, lowest_closing_price_date_weekago: getWeekAgo(true, tLowestPoint.t), lowest_closing_price_date_weekahead: getWeekAgo(false, tLowestPoint.t) };
+		tLowestPoint = { "lowest_closing_price": tLowestPoint.c, "lowest_closing_price_date": tLowestPoint.t, "lowest_closing_price_date_weekago": getWeekAgo(true, tLowestPoint.t), "lowest_closing_price_date_weekahead": getWeekAgo(false, tLowestPoint.t) };
 		var tHighestPoint = tickerArray.reduce((max, curr) => curr.c > max.c ? curr : max);
-		tHighestPoint = { highest_closing_price: tHighestPoint.c, highest_closing_price_date: tHighestPoint.t, highest_closing_price_date_weekago: getWeekAgo(true, tHighestPoint.t), highest_closing_price_date_weekahead: getWeekAgo(false, tHighestPoint.t) };
+		tHighestPoint = { "highest_closing_price": tHighestPoint.c, "highest_closing_price_date": tHighestPoint.t, "highest_closing_price_date_weekago": getWeekAgo(true, tHighestPoint.t), "highest_closing_price_date_weekahead": getWeekAgo(false, tHighestPoint.t) };
 		let TICKER = { ...tLowestPoint, ...tHighestPoint };
 		
 		let weekData = { SPY, TICKER };

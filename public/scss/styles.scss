@@ -1,3 +1,5 @@
+$mobile-breakpoint: 600px;
+
 body {
     margin: 0;
 }
@@ -15,14 +17,12 @@ body {
     width: fit-content;
     margin: auto;
 
-    @media screen and (max-width: 600px) {
+    @media screen and (max-width: $mobile-breakpoint) {
         width: 100%;
     }
 
     #chart {
-        @media screen and (max-width: 600px) {
-            padding-right: 10px;
-        }
+        padding-right: 10px;
     }
 
     .legend {
