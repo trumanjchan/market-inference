@@ -7,6 +7,7 @@ const port = 3000;
 
 const { getComparison, getLowHighPoints, getNews } = require('./utils/helpers');
 const dataCache = new Map();
+var recentTickers = [];
 
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -72,10 +73,17 @@ app.get('/:symbol/gemini', async (req, res) => {
 
 		dataCache.set(req.params.symbol + "_gemini", JSON.parse(apiData.replace(/```json/g, '').replace(/```/g, '').trim()));
 		res.json(JSON.parse(apiData.replace(/```json/g, '').replace(/```/g, '').trim()));
+
+		recentTickers.push(req.params.symbol);
+		dataCache.set("recent-tickers", recentTickers);
 	} catch (error) {
 		console.error(error.message);
 		res.status(500).json(error.message);
 	}
+});
+
+app.get('/:symbol/recent-tickers', (req, res) => {
+	res.json(dataCache.get("recent-tickers"));
 });
 
 app.listen(port, () => {

@@ -21,8 +21,10 @@ body {
     width: 100%;
   }
 }
-.chart-and-legend #chart {
-  padding-right: 10px;
+.chart-and-legend #recent-tickers {
+  text-align: center;
+  width: 70%;
+  margin: 0 auto 10px auto;
 }
 .chart-and-legend .legend {
   display: flex;

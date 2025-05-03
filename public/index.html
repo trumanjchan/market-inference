@@ -9,14 +9,15 @@
 
     <body>
         <div style="display: flex; flex-direction: column;">
-            <div style="display: flex; flex-direction: row;">
+            <div>
                 <div class="chart-and-legend">
-                    <div style="width: fit-content; margin: auto;">
+                    <div style="width: fit-content; margin: 10px auto auto auto;">
                         <form onsubmit="search()">
                             <input type="text" id="ticker" name="ticker" placeholder="NVDA">
                             <button type="submit" onclick="search()">Search</button>
                         </form>
                     </div>
+                    <div id="recent-tickers"></div>
                     <div id="chart"></div>
                     <div class="legend">
                         <div class="legend-container">
@@ -91,6 +92,16 @@
                 const inputValue = input.value.trim().toUpperCase() || input.placeholder;
                 history.pushState({}, '', `/${inputValue}`);
 
+                fetch(`/${inputValue}/recent-tickers`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(`/${inputValue}/recent-tickers`);
+                        console.log(data);
+                        document.getElementById("recent-tickers").innerHTML = data.map(ticker => {
+                            return ticker;
+                        }).join(", ");
+                    })
+                    .catch(error => console.error(`Error fetching /${inputValue}/recent-tickers (first):`, error));
                 fetch(`/${inputValue}/datasets`)
                     .then(response => response.json())
                     .then(data => {
@@ -290,6 +301,15 @@
                                         document.getElementById("negative-articles").innerHTML = data.negative.articles.map(article => {
                                             return `<div>${formatDate(article.created_at)} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
                                         }).join("<br><br>");
+
+                                        fetch(`/${inputValue}/recent-tickers`)
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                document.getElementById("recent-tickers").innerHTML = data.map(ticker => {
+                                                    return ticker;
+                                                }).join(", ");
+                                            })
+                                            .catch(error => console.error(`Error fetching /${inputValue}/recent-tickers (last):`, error));
                                     })
                                     .catch(error => console.error(`Error fetching /${inputValue}/gemini:`, error));
                             })
