@@ -218,8 +218,13 @@
                             document.getElementById('market-legend-price').textContent = `$${marketPrice.toFixed(2)}`;
                             document.getElementById('market-legend-return').textContent = `${marketPercentChange.toFixed(2)}%`;
                             document.getElementById('stock-legend-title').textContent = `${inputValue}`;
-                            document.getElementById('stock-legend-price').textContent = `$${stockPrice.toFixed(2)}`;
-                            document.getElementById('stock-legend-return').textContent = `${stockPercentChange.toFixed(2)}%`;
+                            if (stockPrice) {
+                                document.getElementById('stock-legend-price').textContent = `$${stockPrice.toFixed(2)}`;
+                                document.getElementById('stock-legend-return').textContent = `${stockPercentChange.toFixed(2)}%`;
+                            } else {
+                                document.getElementById('stock-legend-price').textContent = `N/A`;
+                                document.getElementById('stock-legend-return').textContent = `N/A`;
+                            }
                         });
 
                         const initialWidth = document.getElementById("chart").clientWidth;
@@ -241,7 +246,9 @@
                             mutations.forEach((mutation) => {
                                 const el = mutation.target;
                                 const value = parseFloat(el.textContent);
-                                if (!isNaN(value)) {
+                                if (isNaN(value)) {
+                                    el.classList.remove('stockGreen', 'stockRed');
+                                } else {
                                     el.classList.toggle('stockGreen', value > 0);
                                     el.classList.toggle('stockRed', value < 0);
                                 }

@@ -53,7 +53,6 @@ app.get('/:symbol/direction', async (req, res) => {
 		console.error('API route error:', error);
 		res.status(500).json({ error: 'Failed to fetch data' });
 	}
-	return
 });
 
 app.get('/:symbol/gemini', async (req, res) => {
