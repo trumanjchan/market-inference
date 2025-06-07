@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Market Inference</title>
-        <link rel="stylesheet" href="/css/styles.css">
+        <link rel="stylesheet" href="/styles.css">
     </head>
 
     <body>
@@ -66,16 +66,28 @@
         <script type="module">
             import { createChart, PriceScaleMode } from 'https://cdn.skypack.dev/lightweight-charts@4.1.0';
 
+            const formatDate = d => {
+                const [year, month, day] = d.split('-');
+                return `${day} ${new Date(`${year}-${month}-01T00:00:00Z`).toLocaleString('en-US', { month: 'short', timeZone: 'UTC' })} '${year.slice(2)}`;
+            };
+
+
+            fetch(`/data/recent-tickers`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(`/data/recent-tickers`);
+                    console.log(data);
+                    document.getElementById("recent-tickers").innerHTML = "<small>Recent Tickers:</small><br>" + data.map(ticker => {
+                        return ticker;
+                    }).join(", ");
+                })
+                .catch(error => console.error(`Error fetching /data/recent-tickers (first):`, error));
+
             const pathValue = window.location.pathname.substring(1);
             if (pathValue) {
                 document.getElementById("ticker").value = pathValue.trim().toUpperCase();
                 search();
             }
-
-            const formatDate = d => {
-                const [year, month, day] = d.split('-');
-                return `${day} ${new Date(`${year}-${month}-01T00:00:00Z`).toLocaleString('en-US', { month: 'short', timeZone: 'UTC' })} '${year.slice(2)}`;
-            };
 
             function search() {
                 // reset data before populating
@@ -92,16 +104,6 @@
                 const inputValue = input.value.trim().toUpperCase() || input.placeholder;
                 history.pushState({}, '', `/${inputValue}`);
 
-                fetch(`/${inputValue}/recent-tickers`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log(`/${inputValue}/recent-tickers`);
-                        console.log(data);
-                        document.getElementById("recent-tickers").innerHTML = data.map(ticker => {
-                            return ticker;
-                        }).join(", ");
-                    })
-                    .catch(error => console.error(`Error fetching /${inputValue}/recent-tickers (first):`, error));
                 fetch(`/${inputValue}/datasets`)
                     .then(response => response.json())
                     .then(data => {
@@ -227,14 +229,11 @@
                             }
                         });
 
-                        const initialWidth = document.getElementById("chart").clientWidth;
                         const initialHeight = document.getElementById("chart").clientHeight;
-                        const aspectRatio = initialWidth / initialHeight;
                         const resizeObserver = new ResizeObserver(entries => {
                             for (let entry of entries) {
                                 const { width } = entry.contentRect;
-                                const height = width / aspectRatio;
-                                chart.resize(width, height);
+                                chart.resize(width, initialHeight);
                                 chart.timeScale().fitContent();
                             }
                         });
@@ -309,14 +308,14 @@
                                             return `<div>${formatDate(article.created_at)} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
                                         }).join("<br><br>");
 
-                                        fetch(`/${inputValue}/recent-tickers`)
+                                        fetch(`/data/recent-tickers`)
                                             .then(response => response.json())
                                             .then(data => {
-                                                document.getElementById("recent-tickers").innerHTML = data.map(ticker => {
+                                                document.getElementById("recent-tickers").innerHTML = "<small>Recent Tickers:</small><br>" + data.map(ticker => {
                                                     return ticker;
                                                 }).join(", ");
                                             })
-                                            .catch(error => console.error(`Error fetching /${inputValue}/recent-tickers (last):`, error));
+                                            .catch(error => console.error(`Error fetching /data/recent-tickers (last):`, error));
                                     })
                                     .catch(error => console.error(`Error fetching /${inputValue}/gemini:`, error));
                             })

@@ -81,7 +81,7 @@ app.get('/:symbol/gemini', async (req, res) => {
 	}
 });
 
-app.get('/:symbol/recent-tickers', (req, res) => {
+app.get('/data/recent-tickers', (req, res) => {
 	res.json(dataCache.get("recent-tickers"));
 });
 

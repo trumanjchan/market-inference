@@ -1,5 +1,3 @@
-$mobile-breakpoint: 600px;
-
 body {
     margin: 0;
 }
@@ -14,16 +12,13 @@ body {
 }
 
 .chart-and-legend {
-    width: fit-content;
+    width: 90%;
     margin: auto;
-
-    @media screen and (max-width: $mobile-breakpoint) {
-        width: 100%;
-    }
 
     #recent-tickers {
         text-align: center;
-        width: 70%;
+        width: 80%;
+        max-width: 600px;
         margin: 0 auto 10px auto;
     }
 
@@ -32,6 +27,7 @@ body {
         flex-direction: column;
         justify-content: space-between;
         width: 80%;
+        max-width: 600px;
         margin: 20px auto;
     
         .legend-container {
