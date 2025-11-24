@@ -4,7 +4,7 @@ dotenv.config();
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-export async function askGemini(weekData, articleData, symbol) {
+export async function askGemini(weekData, articleData, symbol, model) {
 	const marketLowNewsOriginalArray = articleData.marketLowNews;
 	const tickerLowNewsOriginalArray = articleData.tickerLowNews;
 	const marketLowNewsArray = marketLowNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at: created_at.substring(0, 10), headline, url }));
@@ -16,7 +16,7 @@ export async function askGemini(weekData, articleData, symbol) {
 	const tickerHighNewsArray = tickerHighNewsOriginalArray.news.map(({ created_at, headline, url }) => ({ created_at: created_at.substring(0, 10), headline, url }));
 	
 	const response = await ai.models.generateContent({
-		model: process.env.GEMINI_MODEL,
+		model: model,
 		contents: [
 			{
 				role: "user",

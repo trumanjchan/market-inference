@@ -55,7 +55,7 @@ app.get('/:symbol/direction', async (req, res) => {
 	}
 });
 
-app.get('/:symbol/gemini', async (req, res) => {
+app.get('/:symbol/gemini/:model', async (req, res) => {
 	if (dataCache.get(req.params.symbol + "_gemini")) {
 		let cache = dataCache.get(req.params.symbol + "_gemini");
 		res.json(cache);
@@ -68,7 +68,7 @@ app.get('/:symbol/gemini', async (req, res) => {
 		let cache = dataCache.get(req.params.symbol + "_direction");
 		const articleData = await getNews(cache.weekData, req.params.symbol);
 
-		const apiData = await askGemini(cache.weekData, articleData, req.params.symbol);
+		const apiData = await askGemini(cache.weekData, articleData, req.params.symbol, req.params.model);
 
 		dataCache.set(req.params.symbol + "_gemini", JSON.parse(apiData.replace(/```json/g, '').replace(/```/g, '').trim()));
 		res.json(JSON.parse(apiData.replace(/```json/g, '').replace(/```/g, '').trim()));

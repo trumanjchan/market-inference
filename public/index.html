@@ -11,9 +11,10 @@
         <div style="display: flex; flex-direction: column;">
             <div>
                 <div class="chart-and-legend">
-                    <div style="width: fit-content; margin: 10px auto auto auto;">
+                    <div style="display: flex; flex-direction: column; gap: 5px; width: fit-content; margin: 10px auto;">
+                        <input type="text" id="model" name="model" placeholder="gemini-2.0-flash-lite" style="text-align: center; ">
                         <form onsubmit="search()">
-                            <input type="text" id="ticker" name="ticker" placeholder="NVDA">
+                            <input type="text" id="ticker" name="ticker" placeholder="NVDA" style="text-align: center;">
                             <button type="submit" onclick="search()">Search</button>
                         </form>
                     </div>
@@ -46,19 +47,21 @@
                 </div>
             </div>
 
-            <div style="padding: 0 20px; margin-top: 40px;">
-                <div>
-                    <div class="positive factors-title">Positive Factors</div>
-                    <div id="positive-factors" style="margin-top: 20px;"></div>
+            <div id="factors" style="display: flex; flex-direction: column; gap: 40px; margin: 20px 0; padding: 20px 0;">
+                <div style="padding: 0 20px;">
+                    <div>
+                        <div class="positive factors-title">Positive Factors</div>
+                        <div id="positive-factors" style="margin-top: 20px;"></div>
+                    </div>
+                    <ul id="positive-articles" style="margin: 20px 0;"></ul>
                 </div>
-                <ul id="positive-articles" style="margin: 20px 0;"></ul>
-            </div>
-            <div style="padding: 0 20px; margin-top: 40px; margin-bottom: 40px;">
-                <div>
-                    <div class="negative factors-title">Negative Factors</div>
-                    <div id="negative-factors" style="margin-top: 20px;"></div>
+                <div style="padding: 0 20px;">
+                    <div>
+                        <div class="negative factors-title">Negative Factors</div>
+                        <div id="negative-factors" style="margin-top: 20px;"></div>
+                    </div>
+                    <ul id="negative-articles" style="margin: 20px 0;"></ul>
                 </div>
-                <ul id="negative-articles" style="margin: 20px 0;"></ul>
             </div>
         </div>
 
@@ -86,6 +89,7 @@
             const pathValue = window.location.pathname.substring(1);
             if (pathValue) {
                 document.getElementById("ticker").value = pathValue.trim().toUpperCase();
+                document.getElementById("model").value = sessionStorage.getItem('model');
                 search();
             }
 
@@ -100,14 +104,19 @@
                 document.getElementById("negative-articles").innerText = null;
                 
 
-                const input = document.getElementById('ticker');
-                const inputValue = input.value.trim().toUpperCase() || input.placeholder;
-                history.pushState({}, '', `/${inputValue}`);
+                const tickerField = document.getElementById('ticker');
+                const ticker = tickerField.value.trim().toUpperCase() || tickerField.placeholder;
 
-                fetch(`/${inputValue}/datasets`)
+                const modelField = document.getElementById('model');
+                const model = modelField.value.trim().toLowerCase() || modelField.placeholder;
+                sessionStorage.setItem('model', model);
+                
+                history.pushState({}, '', `/${ticker}`);
+
+                fetch(`/${ticker}/datasets`)
                     .then(response => response.json())
                     .then(data => {
-                        console.log(`/${inputValue}/datasets:`);
+                        console.log(`/${ticker}/datasets:`);
                         console.log(data);
 
                         const chart = createChart(document.getElementById('chart'), {
@@ -171,7 +180,7 @@
                             })
                         );
                         Stock.setData(
-                            data.tickerData.bars[inputValue].map(day => {
+                            data.tickerData.bars[ticker].map(day => {
                                 return {
                                     time: day.t,
                                     value: day.c
@@ -183,11 +192,11 @@
                             if (!param.time) {
                                 // price today
                                 const latestMarketPrice = data.marketData.bars.SPY[data.marketData.bars.SPY.length - 1].c;
-                                const latestStockPrice = data.tickerData.bars[inputValue][data.tickerData.bars[inputValue].length - 1].c;
+                                const latestStockPrice = data.tickerData.bars[ticker][data.tickerData.bars[ticker].length - 1].c;
 
                                 // percent change over one year
                                 const marketClose = data.marketData.bars.SPY[0].c;
-                                const stockClose = data.tickerData.bars[inputValue][0].c;
+                                const stockClose = data.tickerData.bars[ticker][0].c;
 
                                 const marketPriceChange = latestMarketPrice - marketClose;
                                 const marketPercentChange = (marketPriceChange / marketClose) * 100;
@@ -197,7 +206,7 @@
                                 document.getElementById('market-legend-title').textContent = `SPDR S&P 500 ETF`;
                                 document.getElementById('market-legend-price').textContent = `$${latestMarketPrice.toFixed(2)}`;
                                 document.getElementById('market-legend-return').textContent = `${marketPercentChange.toFixed(2)}%`;
-                                document.getElementById('stock-legend-title').textContent = `${inputValue}`;
+                                document.getElementById('stock-legend-title').textContent = `${ticker}`;
                                 document.getElementById('stock-legend-price').textContent = `$${latestStockPrice.toFixed(2)}`;
                                 document.getElementById('stock-legend-return').textContent = `${stockPercentChange.toFixed(2)}%`;
                                 return;
@@ -209,7 +218,7 @@
 
                             // percent change over time at cursor
                             const marketYearAgoClose = data.marketData.bars.SPY[0].c;
-                            const stockYearAgoClose = data.tickerData.bars[inputValue][0].c;
+                            const stockYearAgoClose = data.tickerData.bars[ticker][0].c;
 
                             const marketPriceChange = marketPrice - marketYearAgoClose;
                             const marketPercentChange = (marketPriceChange / marketYearAgoClose) * 100;
@@ -219,7 +228,7 @@
                             document.getElementById('market-legend-title').textContent = `SPDR S&P 500 ETF`;
                             document.getElementById('market-legend-price').textContent = `$${marketPrice.toFixed(2)}`;
                             document.getElementById('market-legend-return').textContent = `${marketPercentChange.toFixed(2)}%`;
-                            document.getElementById('stock-legend-title').textContent = `${inputValue}`;
+                            document.getElementById('stock-legend-title').textContent = `${ticker}`;
                             if (stockPrice) {
                                 document.getElementById('stock-legend-price').textContent = `$${stockPrice.toFixed(2)}`;
                                 document.getElementById('stock-legend-return').textContent = `${stockPercentChange.toFixed(2)}%`;
@@ -258,10 +267,10 @@
                         });
 
                         const latestMarketPrice = data.marketData.bars.SPY[data.marketData.bars.SPY.length - 1].c;
-                        const latestStockPrice = data.tickerData.bars[inputValue][data.tickerData.bars[inputValue].length - 1].c;
+                        const latestStockPrice = data.tickerData.bars[ticker][data.tickerData.bars[ticker].length - 1].c;
 
                         const marketClose = data.marketData.bars.SPY[0].c;
-                        const stockClose = data.tickerData.bars[inputValue][0].c;
+                        const stockClose = data.tickerData.bars[ticker][0].c;
 
                         const marketPriceChange = latestMarketPrice - marketClose;
                         const marketPercentChange = (marketPriceChange / marketClose) * 100;
@@ -271,16 +280,16 @@
                         document.getElementById('market-legend-title').textContent = `SPDR S&P 500 ETF`;
                         document.getElementById('market-legend-price').textContent = `$${latestMarketPrice.toFixed(2)}`;
                         document.getElementById('market-legend-return').textContent = `${marketPercentChange.toFixed(2)}%`;
-                        document.getElementById('stock-legend-title').textContent = `${inputValue}`;
+                        document.getElementById('stock-legend-title').textContent = `${ticker}`;
                         document.getElementById('stock-legend-price').textContent = `$${latestStockPrice.toFixed(2)}`;
                         document.getElementById('stock-legend-return').textContent = `${stockPercentChange.toFixed(2)}%`;
 
                         document.querySelector('.tv-lightweight-charts > table > tr:first-child > td:first-child > div > canvas:last-child').style.visibility = "hidden";
 
-                        fetch(`/${inputValue}/direction`)
+                        fetch(`/${ticker}/direction`)
                             .then(response => response.json())
                             .then(data => {
-                                console.log(`/${inputValue}/direction:`);
+                                console.log(`/${ticker}/direction:`);
                                 console.log(data);
 
                                 document.getElementById("market-direction-low").innerText = "Low: " + data.weekData.SPY.lowest_closing_price + " — " + formatDate(data.weekData.SPY.lowest_closing_price_date);
@@ -288,10 +297,10 @@
                                 document.getElementById("stock-direction-low").innerText = "Low: " + data.weekData.TICKER.lowest_closing_price + " — " + formatDate(data.weekData.TICKER.lowest_closing_price_date);
                                 document.getElementById("stock-direction-high").innerText = "High: " + data.weekData.TICKER.highest_closing_price + " — " + formatDate(data.weekData.TICKER.highest_closing_price_date);
                                 
-                                fetch(`/${inputValue}/gemini`)
+                                fetch(`/${ticker}/gemini/${model}`)
                                     .then(response => response.json())
                                     .then(data => {
-                                        console.log(`/${inputValue}/gemini:`);
+                                        console.log(`/${ticker}/gemini/${model}:`);
                                         console.log(data);
 
                                         document.getElementById("positive-factors").innerHTML = data.positive.factors.map(factor => {
@@ -308,6 +317,11 @@
                                             return `<div>${formatDate(article.created_at)} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
                                         }).join("<br><br>");
 
+                                        document.getElementById("factors").scrollIntoView({
+                                            behavior: 'smooth',
+                                            block: 'start'
+                                        });
+
                                         fetch(`/data/recent-tickers`)
                                             .then(response => response.json())
                                             .then(data => {
@@ -317,11 +331,11 @@
                                             })
                                             .catch(error => console.error(`Error fetching /data/recent-tickers (last):`, error));
                                     })
-                                    .catch(error => console.error(`Error fetching /${inputValue}/gemini:`, error));
+                                    .catch(error => console.error(`Error fetching /${ticker}/gemini/${model}:`, error));
                             })
-                            .catch(error => console.error(`Error fetching /${inputValue}/direction:`, error));
+                            .catch(error => console.error(`Error fetching /${ticker}/direction:`, error));
                     })
-                    .catch(error => console.error(`Error fetching /${inputValue}/datasets:`, error));
+                    .catch(error => console.error(`Error fetching /${ticker}/datasets:`, error));
             }
             window.search = search;
         </script>
