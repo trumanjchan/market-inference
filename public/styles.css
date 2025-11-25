@@ -11,39 +11,48 @@ body {
     background-color: rgb(252, 232, 230);
 }
 
-.tabs {
-    display: none;
+.fixed-visible {
     z-index: 99;
     position: fixed;
+    top: 0;
     right: 0;
     bottom: 0;
     left: 0;
+    display: flex;
+    justify-content: center;
     pointer-events: none;
 
-    .tabs-container {
-        display: flex;
-        flex-direction: row;
-        justify-self: center;
-        border-top-left-radius: 50%;
-        border-top-right-radius: 50%;
+    .tabs {
+        display: none;
+        position: absolute;
+        bottom: 0;
+        pointer-events: none;
 
-        button {
-            padding: 15px;
-            width: 94px;
-            pointer-events: auto;
-        }
-
-        .tab-legend {
+        .tabs-container {
+            display: flex;
+            flex-direction: row;
+            justify-self: center;
             border-top-left-radius: 50%;
-        }
-
-        .tab-analysis {
             border-top-right-radius: 50%;
-        }
 
-        .tab.active {
-            background: #333;
-            color: white;
+            button {
+                padding: 15px;
+                width: 94px;
+                pointer-events: auto;
+            }
+
+            .tab-legend {
+                border-top-left-radius: 50%;
+            }
+
+            .tab-analysis {
+                border-top-right-radius: 50%;
+            }
+
+            .tab.active {
+                background: #333;
+                color: white;
+            }
         }
     }
 }

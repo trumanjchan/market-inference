@@ -9,18 +9,22 @@
 
     <body>
         <div style="display: flex; flex-direction: column;">
-            <div class="tabs">
-                <div class="tabs-container">
-                    <button class="tab tab-legend" onclick="activateTab(this)">Legend</button>
-                    <button class="tab tab-analysis" onclick="activateTab(this)">Analysis</button>
+            <div class="fixed-visible">
+                <div class="tabs">
+                    <div class="tabs-container">
+                        <button class="tab tab-legend" onclick="activateTab(this)">Legend</button>
+                        <button class="tab tab-analysis" onclick="activateTab(this)">Analysis</button>
+                    </div>
                 </div>
             </div>
+
             <div id="modal">
                 <div class="modal-container">
                     <div id="modal-content"></div>
                     <button class="close-button" onclick="document.getElementById('modal').style.visibility='hidden';">Close</button>
                 </div>
             </div>
+
             <div class="search-and-chart">
                 <div class="input-fields">
                     <input type="text" id="model" name="model" placeholder="gemini-2.0-flash-lite" style="text-align: center; ">
