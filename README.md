@@ -8,5 +8,6 @@ Using Alpaca Markets and Google Gemini AI to find the macroeconomic factors and 
 ### Notable Features
 - Cache - reduces repetitive Gemini calls, fast data delivery
 - Shareable links - show your friends the next value play
+- Error handling - error pop-ups for user experience
 - Responsive - view the site on your desktop or mobile
 - Macroeconomic factors and articles within 1 week of stock's High and Low
