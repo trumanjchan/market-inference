@@ -11,6 +11,43 @@ body {
     background-color: rgb(252, 232, 230);
 }
 
+.tabs {
+    display: none;
+    z-index: 99;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+
+    .tabs-container {
+        display: flex;
+        flex-direction: row;
+        justify-self: center;
+        border-top-left-radius: 50%;
+        border-top-right-radius: 50%;
+
+        button {
+            padding: 15px;
+            width: 94px;
+            pointer-events: auto;
+        }
+
+        .tab-legend {
+            border-top-left-radius: 50%;
+        }
+
+        .tab-analysis {
+            border-top-right-radius: 50%;
+        }
+
+        .tab.active {
+            background: #333;
+            color: white;
+        }
+    }
+}
+
 #modal {
     z-index: 100;
     visibility: hidden;
@@ -47,11 +84,11 @@ body {
     }
 }
 
-.chart-and-legend {
+.search-and-chart {
     width: 90%;
     margin: auto;
 
-    #input-fields {
+    .input-fields {
         display: flex;
         flex-direction: column;
         gap: 5px;
@@ -65,9 +102,14 @@ body {
         max-width: 600px;
         margin: 0 auto 10px auto;
     }
+}
 
-    .legend {
-        display: flex;
+.information {
+    width: 90%;
+    margin: auto;
+
+    #Legend {
+        display: none;
         flex-direction: column;
         justify-content: space-between;
         width: 90%;
@@ -140,19 +182,41 @@ body {
             }
         }
     }
+
+    #Analysis {
+        display: none;
+
+        .analysis-container {
+            display: flex;
+            flex-direction: row;
+            gap: 40px;
+            margin: 20px 0;
+
+            > div {
+                width: 50%;
+
+                > div {
+                    text-align: center;
+                }
+            }
+
+            .factors-title {
+                padding: 5px 15px;
+                border-radius: 8px;
+
+                &.positive {
+                    color: rgb(19, 115, 51);
+                    background-color: rgb(230, 244, 234);
+                }
+                &.negative {
+                    color: rgb(165, 14, 14);
+                    background-color: rgb(252, 232, 230);
+                }
+            }
+        }
+    }
 }
 
-.factors-title {
-    width: fit-content;
-    padding: 5px 15px;
-    border-radius: 8px;
-
-    &.positive {
-        color: rgb(19, 115, 51);
-        background-color: rgb(230, 244, 234);
-    }
-    &.negative {
-        color: rgb(165, 14, 14);
-        background-color: rgb(252, 232, 230);
-    }
+.flex {
+    display: flex !important;
 }

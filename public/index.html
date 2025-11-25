@@ -9,64 +9,73 @@
 
     <body>
         <div style="display: flex; flex-direction: column;">
+            <div class="tabs">
+                <div class="tabs-container">
+                    <button class="tab tab-legend" onclick="activateTab(this)">Legend</button>
+                    <button class="tab tab-analysis" onclick="activateTab(this)">Analysis</button>
+                </div>
+            </div>
             <div id="modal">
                 <div class="modal-container">
                     <div id="modal-content"></div>
                     <button class="close-button" onclick="document.getElementById('modal').style.visibility='hidden';">Close</button>
                 </div>
             </div>
-            <div>
-                <div class="chart-and-legend">
-                    <div id="input-fields">
-                        <input type="text" id="model" name="model" placeholder="gemini-2.0-flash-lite" style="text-align: center; ">
-                        <form onsubmit="search()">
-                            <input type="text" id="ticker" name="ticker" placeholder="NVDA" autofocus style="text-align: center;">
-                            <button type="submit" onclick="search()">Search</button>
-                        </form>
-                    </div>
-                    <div id="recent-tickers"></div>
-                    <div id="chart"></div>
-                    <div class="legend">
-                        <div class="legend-container">
-                            <div class="legend-row">
-                                <div id="market-legend-title" class="legend-title market"></div>
-                                <div id="market-legend-price" class="legend-price"></div>
-                                <div id="market-legend-return" class="legend-return"></div>
-                            </div>
-                            <div class="legend-row">
-                                <div id="market-direction-high"></div>
-                                <div id="market-direction-low"></div>
-                            </div>
-                        </div>
-                        <div class="legend-container">
-                            <div class="legend-row">
-                                <div id="stock-legend-title" class="legend-title stock"></div>
-                                <div id="stock-legend-price" class="legend-price"></div>
-                                <div id="stock-legend-return" class="legend-return"></div>
-                            </div>
-                            <div class="legend-row">
-                                <div id="stock-direction-high"></div>
-                                <div id="stock-direction-low"></div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="search-and-chart">
+                <div class="input-fields">
+                    <input type="text" id="model" name="model" placeholder="gemini-2.0-flash-lite" style="text-align: center; ">
+                    <form onsubmit="search()">
+                        <input type="text" id="ticker" name="ticker" placeholder="NVDA" style="text-align: center;">
+                        <button type="submit" onclick="search()">Search</button>
+                    </form>
                 </div>
+                <div id="recent-tickers"></div>
+                <div id="chart"></div>
             </div>
 
-            <div id="factors" style="display: flex; flex-direction: column; gap: 40px; margin: 20px 0; padding: 20px 0;">
-                <div style="padding: 0 20px;">
-                    <div>
-                        <div class="positive factors-title">Positive Factors</div>
-                        <div id="positive-factors" style="margin-top: 20px;"></div>
+            <div class="information">
+                <div id="Legend">
+                    <div class="legend-container">
+                        <div class="legend-row">
+                            <div id="market-legend-title" class="legend-title market"></div>
+                            <div id="market-legend-price" class="legend-price"></div>
+                            <div id="market-legend-return" class="legend-return"></div>
+                        </div>
+                        <div class="legend-row">
+                            <div id="market-direction-low"></div>
+                            <div id="market-direction-high"></div>
+                        </div>
                     </div>
-                    <ul id="positive-articles" style="margin: 20px 0;"></ul>
+                    <div class="legend-container">
+                        <div class="legend-row">
+                            <div id="stock-legend-title" class="legend-title stock"></div>
+                            <div id="stock-legend-price" class="legend-price"></div>
+                            <div id="stock-legend-return" class="legend-return"></div>
+                        </div>
+                        <div class="legend-row">
+                            <div id="stock-direction-low"></div>
+                            <div id="stock-direction-high"></div>
+                        </div>
+                    </div>
                 </div>
-                <div style="padding: 0 20px;">
-                    <div>
-                        <div class="negative factors-title">Negative Factors</div>
-                        <div id="negative-factors" style="margin-top: 20px;"></div>
+
+                <div id="Analysis">
+                    <div class="analysis-container">
+                        <div>
+                            <div>
+                                <div class="negative factors-title">Negative Factors</div>
+                                <div id="negative-factors" style="margin-top: 20px;"></div>
+                            </div>
+                            <ul id="negative-articles" style="margin: 20px 0;"></ul>
+                        </div>
+                        <div>
+                            <div>
+                                <div class="positive factors-title">Positive Factors</div>
+                                <div id="positive-factors" style="margin-top: 20px;"></div>
+                            </div>
+                            <ul id="positive-articles" style="margin: 20px 0;"></ul>
+                        </div>
                     </div>
-                    <ul id="negative-articles" style="margin: 20px 0;"></ul>
                 </div>
             </div>
         </div>
@@ -74,6 +83,15 @@
 
         <script type="module">
             import { createChart, PriceScaleMode } from 'https://cdn.skypack.dev/lightweight-charts@4.1.0';
+
+            function activateTab(clicked) {
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.classList.remove('active');
+                    document.getElementById(tab.innerHTML).classList.remove('flex');
+                });
+                clicked.classList.add('active');
+                document.getElementById(clicked.innerHTML).classList.add('flex');
+            }
 
             function formatDate(d) {
                 const [year, month, day] = d.split('-');
@@ -292,6 +310,8 @@
                         document.getElementById('stock-legend-return').textContent = `${stockPercentChange.toFixed(2)}%`;
 
                         document.querySelector('.tv-lightweight-charts > table > tr:first-child > td:first-child > div > canvas:last-child').style.visibility = "hidden";
+                        document.querySelector('.tabs').style.display = "block";
+                        document.querySelector('.tab-legend').click();
 
                         fetch(`/${ticker}/direction`)
                             .then(response => response.json())
@@ -324,12 +344,8 @@
                                             return `<div>${formatDate(article.created_at)} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
                                         }).join("<br><br>");
 
-                                        /*document.getElementById("factors").scrollIntoView({
-                                            behavior: 'smooth',
-                                            block: 'start'
-                                        });*/
-
                                         fetchRecentTickers();
+                                        document.querySelector('.tab-analysis').click();
                                     })
                                     .catch(error => {
                                         console.error(`Error fetching /${ticker}/gemini/${model}:`, error);
@@ -347,6 +363,7 @@
                         document.getElementById("modal-content").innerText = "Please input a valid ticker symbol and try again.";
                     });
             }
+            window.activateTab = activateTab;
             window.search = search;
         </script>
     </body>
