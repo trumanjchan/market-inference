@@ -39,6 +39,8 @@ body {
                 padding: 15px;
                 width: 94px;
                 pointer-events: auto;
+                border-bottom: none;
+                cursor: pointer;
             }
 
             .tab-legend {
@@ -74,8 +76,7 @@ body {
 
     .modal-container {
         align-self: center;
-        justify-self: center;
-        width: fit-content;
+        text-align: center;
         background-color: white;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         border-radius: 15px;
@@ -86,8 +87,6 @@ body {
         }
 
         .close-button {
-            display: flex;
-            justify-self: center;
             margin-top: 10px;
         }
     }
@@ -123,7 +122,7 @@ body {
         justify-content: space-between;
         width: 90%;
         max-width: 600px;
-        margin: 20px auto;
+        margin: 20px auto 60px auto;
     
         .legend-container {
             display: flex;
@@ -221,6 +220,10 @@ body {
                     color: rgb(165, 14, 14);
                     background-color: rgb(252, 232, 230);
                 }
+            }
+
+            li {
+                padding: 10px 0;
             }
         }
     }

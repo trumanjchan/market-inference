@@ -68,16 +68,16 @@
                         <div>
                             <div>
                                 <div class="negative factors-title">Negative Factors</div>
-                                <div id="negative-factors" style="margin-top: 20px;"></div>
+                                <div id="negative-factors" style="margin: 20px 0;"></div>
                             </div>
-                            <ul id="negative-articles" style="margin: 20px 0;"></ul>
+                            <ul id="negative-articles" style="margin: 0; padding: 20px 0 20px 20px;"></ul>
                         </div>
                         <div>
                             <div>
                                 <div class="positive factors-title">Positive Factors</div>
-                                <div id="positive-factors" style="margin-top: 20px;"></div>
+                                <div id="positive-factors" style="margin: 20px 0;"></div>
                             </div>
-                            <ul id="positive-articles" style="margin: 20px 0;"></ul>
+                            <ul id="positive-articles" style="margin: 0; padding: 20px 0 20px 20px;"></ul>
                         </div>
                     </div>
                 </div>
@@ -338,15 +338,15 @@
                                             return `<strong>${factor.factor}</strong><br>`;
                                         }).join("<br>");
                                         document.getElementById("positive-articles").innerHTML = data.positive.articles.map(article => {
-                                            return `<div>${formatDate(article.created_at)} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
-                                        }).join("<br><br>");
+                                            return `<li>${formatDate(article.created_at)} — <a href=${article.url} target="_blank">${article.headline}</a></li>`
+                                        }).join("");
 
                                         document.getElementById("negative-factors").innerHTML = data.negative.factors.map(factor => {
                                             return `<strong>${factor.factor}</strong><br>`;
                                         }).join("<br>");
                                         document.getElementById("negative-articles").innerHTML = data.negative.articles.map(article => {
-                                            return `<div>${formatDate(article.created_at)} — <a href=${article.url} target="_blank">${article.headline}</a></div>`
-                                        }).join("<br><br>");
+                                            return `<li>${formatDate(article.created_at)} — <a href=${article.url} target="_blank">${article.headline}</a></li>`
+                                        }).join("");
 
                                         fetchRecentTickers();
                                         document.querySelector('.tab-analysis').click();
