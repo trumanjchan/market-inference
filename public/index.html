@@ -27,9 +27,9 @@
 
             <div class="search-and-chart">
                 <div class="input-fields">
-                    <input type="text" id="model" name="model" placeholder="gemini-2.0-flash-lite" style="text-align: center; ">
+                    <input type="text" id="model" name="model" style="text-align: center; ">
                     <form onsubmit="search()">
-                        <input type="text" id="ticker" name="ticker" placeholder="NVDA" style="text-align: center;">
+                        <input type="text" id="ticker" name="ticker" value="NVDA" style="text-align: center;">
                         <button type="submit" onclick="search()">Search</button>
                     </form>
                 </div>
@@ -91,10 +91,10 @@
             function activateTab(clicked) {
                 document.querySelectorAll('.tab').forEach(tab => {
                     tab.classList.remove('active');
-                    document.getElementById(tab.innerHTML).classList.remove('flex');
+                    document.getElementById(tab.innerHTML).classList.remove('block');
                 });
                 clicked.classList.add('active');
-                document.getElementById(clicked.innerHTML).classList.add('flex');
+                document.getElementById(clicked.innerHTML).classList.add('block');
             }
 
             function formatDate(d) {
@@ -113,12 +113,17 @@
                     .catch(error => console.error(`Error fetching /data/recent-tickers:`, error));
             }
 
+            fetch("/config")
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("model").value = data.modelName;
+                    sessionStorage.setItem('model', data.modelName);
+                });
             
             fetchRecentTickers();
             const pathValue = window.location.pathname.substring(1);
             if (pathValue) {
                 document.getElementById("ticker").value = pathValue.trim().toUpperCase();
-                document.getElementById("model").value = sessionStorage.getItem('model');
                 search();
             }
 
@@ -133,12 +138,12 @@
                 document.getElementById("negative-articles").innerText = null;
                 
 
-                const tickerField = document.getElementById('ticker');
-                const ticker = tickerField.value.trim().toUpperCase() || tickerField.placeholder;
+                //console.log("value: " + document.getElementById('model').value)
+                //console.log("got model: " + sessionStorage.getItem('model'))
+                const model = sessionStorage.getItem('model');
 
-                const modelField = document.getElementById('model');
-                const model = modelField.value.trim().toLowerCase() || modelField.placeholder;
-                sessionStorage.setItem('model', model);
+                const tickerField = document.getElementById('ticker');
+                const ticker = tickerField.value.trim().toUpperCase();
                 
                 history.pushState({}, '', `/${ticker}`);
 
