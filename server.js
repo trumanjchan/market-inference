@@ -13,7 +13,7 @@ var recentTickers = [];
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/config', (req, res) => {
-  res.json({ modelName: process.env.GEMINI_MODEL });
+  res.json({ defaultModel: process.env.GEMINI_MODEL });
 });
 
 app.get('/:symbol', (req, res) => {

@@ -7,6 +7,7 @@ Using Alpaca Markets and Google Gemini AI to find the macroeconomic factors and 
 
 ### Notable Features
 - Cache - reduces repetitive Gemini calls, fast data delivery
+- User definable Gemini model - uses a default model from env unless specified
 - Shareable links - show your friends the next value play
 - Error handling - error pop-ups for user experience
 - Responsive - view the site on your desktop or mobile

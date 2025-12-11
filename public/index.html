@@ -27,7 +27,7 @@
 
             <div class="search-and-chart">
                 <div class="input-fields">
-                    <input type="text" id="model" name="model" style="text-align: center; ">
+                    <input type="text" id="model" name="model" onchange="setSpecifiedModel(this.value)" style="text-align: center; ">
                     <form onsubmit="search()">
                         <input type="text" id="ticker" name="ticker" value="NVDA" style="text-align: center;">
                         <button type="submit" onclick="search()">Search</button>
@@ -85,6 +85,12 @@
         </div>
 
 
+        <script>
+            function setSpecifiedModel(value) {
+                sessionStorage.setItem('specified-model', value);
+            }
+        </script>
+
         <script type="module">
             import { createChart, PriceScaleMode } from 'https://cdn.skypack.dev/lightweight-charts@4.1.0';
 
@@ -113,18 +119,29 @@
                     .catch(error => console.error(`Error fetching /data/recent-tickers:`, error));
             }
 
-            fetch("/config")
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("model").value = data.modelName;
-                    sessionStorage.setItem('model', data.modelName);
-                });
+            function fetchConfig(bool) {
+                fetch("/config")
+                    .then(response => response.json())
+                    .then(data => {
+                        sessionStorage.setItem('default-model', data.defaultModel);
+
+                        if (sessionStorage.getItem('specified-model') && data.defaultModel != sessionStorage.getItem('specified-model')) {
+                            document.getElementById("model").value = sessionStorage.getItem('specified-model');
+                        } else {
+                            document.getElementById("model").value = data.defaultModel;
+                        }
+
+                        if (bool) search();
+                    });
+            }
             
+            fetchConfig(false);
             fetchRecentTickers();
             const pathValue = window.location.pathname.substring(1);
             if (pathValue) {
                 document.getElementById("ticker").value = pathValue.trim().toUpperCase();
-                search();
+
+                fetchConfig(true);
             }
 
             function search() {
@@ -136,11 +153,12 @@
                 document.getElementById("positive-articles").innerText = null;
                 document.getElementById("negative-factors").innerText = null;
                 document.getElementById("negative-articles").innerText = null;
-                
 
-                //console.log("value: " + document.getElementById('model').value)
-                //console.log("got model: " + sessionStorage.getItem('model'))
-                const model = sessionStorage.getItem('model');
+
+                var model = sessionStorage.getItem('default-model');
+                if (sessionStorage.getItem('specified-model') && model != sessionStorage.getItem('specified-model')) {
+                    model = sessionStorage.getItem('specified-model');
+                }
 
                 const tickerField = document.getElementById('ticker');
                 const ticker = tickerField.value.trim().toUpperCase();
