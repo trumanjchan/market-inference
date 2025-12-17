@@ -361,14 +361,14 @@
                                             return `<strong>${factor.factor}</strong><br>`;
                                         }).join("<br>");
                                         document.getElementById("positive-articles").innerHTML = data.positive.articles.map(article => {
-                                            return `<li>${formatDate(article.created_at)} — <a href=${article.url} target="_blank">${article.headline}</a></li>`
+                                            return `<li>${formatDate(article.created_at)} - ${article.source}<br><a href=${article.url} target="_blank">${article.headline}</a></li>`
                                         }).join("");
 
                                         document.getElementById("negative-factors").innerHTML = data.negative.factors.map(factor => {
                                             return `<strong>${factor.factor}</strong><br>`;
                                         }).join("<br>");
                                         document.getElementById("negative-articles").innerHTML = data.negative.articles.map(article => {
-                                            return `<li>${formatDate(article.created_at)} — <a href=${article.url} target="_blank">${article.headline}</a></li>`
+                                            return `<li>${formatDate(article.created_at)} - ${article.source}<br><a href=${article.url} target="_blank">${article.headline}</a></li>`
                                         }).join("");
 
                                         fetchRecentTickers();

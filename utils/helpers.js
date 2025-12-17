@@ -1,3 +1,6 @@
+const finnhub = require('finnhub');
+const finnhubClient = new finnhub.DefaultApi(process.env.FINNHUB_API_KEY);
+
 const options = {
 	method: 'GET',
 	headers: {
@@ -17,7 +20,19 @@ function getWeekAgo(bool, date) {
 	const oneWeekAgo = inputDate.toISOString().substring(0, 10);
 
 	return oneWeekAgo;
-}
+};
+
+function fetchCompanyNews(symbol, from, to) {
+	return new Promise((resolve, reject) => {
+		finnhubClient.companyNews(symbol, from, to, (error, data) => {
+			if (error) {
+				reject(error);
+				return;
+			}
+			resolve(data);
+		});
+	});
+};
 
 const getComparison = async (symbol) => {
 	const today = new Date();
@@ -77,39 +92,22 @@ const getLowHighPoints = async (marketData, tickerData, symbol) => {
 	} catch (error) {
 		console.error('Fetch getLowHighPoints() error:', error);
 	}
-}
+};
 
 const getNews = async (weekData, symbol) => {
-	const marketLowNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${weekData.TICKER.lowest_closing_price_date_weekago}&end=${weekData.TICKER.lowest_closing_price_date_weekahead}&sort=desc&symbols=SPY&limit=50`;
-	const tickerLowNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${weekData.TICKER.lowest_closing_price_date_weekago}&end=${weekData.TICKER.lowest_closing_price_date_weekahead}&sort=desc&symbols=${symbol}&limit=50`;
-	const marketHighNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${weekData.TICKER.highest_closing_price_date_weekago}&end=${weekData.TICKER.highest_closing_price_date_weekahead}&sort=desc&symbols=SPY&limit=50`;
-	const tickerHighNewsUrl = `https://data.alpaca.markets/v1beta1/news?start=${weekData.TICKER.highest_closing_price_date_weekago}&end=${weekData.TICKER.highest_closing_price_date_weekahead}&sort=desc&symbols=${symbol}&limit=50`;
-
 	try {
-		const [marketLowNewsResponse, tickerLowNewsResponse, marketHighNewsResponse, tickerHighNewsResponse] = await Promise.all([
-			fetch(marketLowNewsUrl, options),
-			fetch(tickerLowNewsUrl, options),
-			fetch(marketHighNewsUrl, options),
-			fetch(tickerHighNewsUrl, options)
+		const [marketLowNews, marketHighNews, tickerLowNews, tickerHighNews] = await Promise.all([
+			fetchCompanyNews("SPY", weekData.TICKER.lowest_closing_price_date_weekago, weekData.TICKER.lowest_closing_price_date_weekahead),
+			fetchCompanyNews("SPY", weekData.TICKER.highest_closing_price_date_weekago, weekData.TICKER.highest_closing_price_date_weekahead),
+			fetchCompanyNews(symbol, weekData.TICKER.lowest_closing_price_date_weekago, weekData.TICKER.lowest_closing_price_date_weekahead),
+			fetchCompanyNews(symbol, weekData.TICKER.highest_closing_price_date_weekago, weekData.TICKER.highest_closing_price_date_weekahead)
 		]);
-		
-		if (!marketLowNewsResponse.ok || !tickerLowNewsResponse.ok || !marketHighNewsResponse.ok || !tickerHighNewsResponse.ok) {
-			console.error('Error fetching historical bars:', marketLowNewsResponse.statusText, tickerLowNewsResponse.statusText, marketHighNewsResponse.statusText, tickerHighNewsResponse.statusText);
-			return;
-		}
-		
-		const [marketLowNews, tickerLowNews, marketHighNews, tickerHighNews] = await Promise.all([
-			marketLowNewsResponse.json(),
-			tickerLowNewsResponse.json(),
-			marketHighNewsResponse.json(),
-			tickerHighNewsResponse.json()
-		]);
-		
-		return { marketLowNews, tickerLowNews, marketHighNews, tickerHighNews };
+
+		return { marketLowNews, marketHighNews, tickerLowNews, tickerHighNews };
 	} catch (error) {
 		console.error('Fetch getNews() error:', error);
 	}
-}
+};
 
 
 module.exports = {

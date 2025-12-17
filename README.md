@@ -1,9 +1,9 @@
 # Market Inference
-Using Alpaca Markets and Google Gemini AI to find the macroeconomic factors and articles in a week range of a stock's peak and dip, also taking into account the market during the peak and dip week ranges.
+Using Alpaca Markets' Market Data API for historical bars, Finnhub for company news, and a Google Gemini model to find the positive and negative macroeconomic factors and articles in a week range of a stock's peak and dip, also taking into account the market during the peak and dip week ranges.
 1. Graph percent change over 1 year for SPY vs TICKER
-2. Find the peak and dip value and date for SPY and TICKER, and peak and dip week ranges for TICKER
+2. Find the peak and dip values and dates for SPY and TICKER, and peak and dip week ranges for TICKER
 3. Get SPY and TICKER news articles dated within TICKER's peak and dip week ranges
-4. Ask Gemini to determine the positive/negative macroeconomic factors and find 5 relevant articles that mention TICKER within TICKER peak and dip week ranges from the High/Low SPY-News and High/Low Stock-News
+4. Ask Gemini to determine the 5 positive and negative macroeconomic factors and find 5 supporting articles, each from different sources, that mention TICKER within TICKER peak and dip week ranges from the High/Low SPY-News and High/Low Stock-News
 
 ### Notable Features
 - Cache - reduces repetitive Gemini calls, fast data delivery
@@ -11,4 +11,5 @@ Using Alpaca Markets and Google Gemini AI to find the macroeconomic factors and 
 - Shareable links - show your friends the next value play
 - Error handling - error pop-ups for user experience
 - Responsive - view the site on your desktop or mobile
+- Various news sources - not limited to one single source for articles
 - Macroeconomic factors and articles within 1 week of stock's High and Low
