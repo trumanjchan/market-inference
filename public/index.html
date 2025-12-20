@@ -12,6 +12,9 @@
             <div class="fixed-visible">
                 <div class="tabs">
                     <div class="tabs-container">
+                        <div id="loading-indicator">
+                            <div id="breathing-circle"></div>
+                        </div>
                         <button class="tab tab-legend" onclick="activateTab(this)">Legend</button>
                         <button class="tab tab-analysis" onclick="activateTab(this)">Analysis</button>
                     </div>
@@ -379,6 +382,9 @@
 
                                         document.getElementById("modal").style.visibility = "visible";
                                         document.getElementById("modal-content").innerText = "Ensure the Gemini model is valid and try again or use a different model.\nFree tier limit may be reached or model temporarily throttled.";
+                                    })
+                                    .finally(() => {
+                                        document.getElementById("loading-indicator").style.display = "none";
                                     });
                             })
                             .catch(error => console.error(`Error fetching /${ticker}/direction:`, error));

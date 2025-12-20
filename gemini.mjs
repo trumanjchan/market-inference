@@ -23,8 +23,8 @@ export async function askGemini(weekData, articleData, symbol, model) {
 				parts: [
 					{
 						text:
-						`1. Determine 5 positive macroeconomic factors and find 5 supporting articles, each from different sources, that mention ${symbol} between ${weekData.TICKER.highest_closing_price_date_weekago} and ${weekData.TICKER.highest_closing_price_date_weekahead} from SPY-High-News and ${symbol}-High-News.
-						2. Determine 5 negative macroeconomic factors and find 5 supporting articles, each from different sources, that mention ${symbol} between ${weekData.TICKER.lowest_closing_price_date_weekago} and ${weekData.TICKER.lowest_closing_price_date_weekahead} from SPY-Low-News and ${symbol}-Low-News.
+						`1. Determine 5 positive macroeconomic factors and find 5 supporting articles that mention ${symbol} between ${weekData.TICKER.highest_closing_price_date_weekago} and ${weekData.TICKER.highest_closing_price_date_weekahead} from SPY-High-News and ${symbol}-High-News.
+						2. Determine 5 negative macroeconomic factors and find 5 supporting articles that mention ${symbol} between ${weekData.TICKER.lowest_closing_price_date_weekago} and ${weekData.TICKER.lowest_closing_price_date_weekahead} from SPY-Low-News and ${symbol}-Low-News.
 						For "factor", summarize it in a few short phrases or keywords (no full sentences). Keep it under 10 words.
 						For "created_at", convert the datetime to YYYY-MM-DD format.
 						
